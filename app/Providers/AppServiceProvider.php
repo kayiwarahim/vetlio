@@ -36,8 +36,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->initGate();
         Number::useCurrency('EUR');
+
+        $this->initGate();
 
         //Filament
         $this->configureFilamentActions();

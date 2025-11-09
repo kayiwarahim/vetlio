@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Queries\Holidays;
+use App\Services\ReservationService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
@@ -247,6 +248,7 @@ class CalendarWidget extends BaseCalendarWidget
                 ->icon(PhosphorIcons::CalendarX)
                 ->modalWidth(Width::Large)
                 ->color('danger')
+                ->model(Reservation::class)
                 ->modalSubmitActionLabel('Cancel reservation')
                 ->modalIcon(PhosphorIcons::CalendarX)
                 ->modalHeading('Cancel reservation')
@@ -262,9 +264,10 @@ class CalendarWidget extends BaseCalendarWidget
                         ->label('Send email')
 
                 ])
-                ->model(Reservation::class)
-                ->mountUsing(function ($schema, $arguments) {
+                ->action(function (array $data, $record, $action, $livewire) {
+                    $reservation = $livewire->getEventRecord() ?? null;
 
+                    app(ReservationService::class)->cancel($reservation, $data['reason'], $data['send_email']);
                 })
         ];
     }
@@ -318,7 +321,7 @@ class CalendarWidget extends BaseCalendarWidget
         $events = collect();
 
         $from = Carbon::parse($info->start)->startOfDay();
-        $to   = Carbon::parse($info->end)->endOfDay();
+        $to = Carbon::parse($info->end)->endOfDay();
 
         $resourceIds = $this->getResources()->get()->pluck('id');
 
@@ -329,7 +332,7 @@ class CalendarWidget extends BaseCalendarWidget
             if ($dayOfWeek === 6 || $dayOfWeek === 7) {
                 $events->push(
                     CalendarEvent::make()
-                        ->key('weekend-'.$cursor->toDateString())
+                        ->key('weekend-' . $cursor->toDateString())
                         ->title($dayOfWeek === 6 ? 'Saturday' : 'Sunday')
                         ->start($cursor->toDateString())
                         ->end($cursor->toDateString())
