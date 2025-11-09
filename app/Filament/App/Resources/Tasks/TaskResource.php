@@ -24,11 +24,11 @@ class TaskResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
-    protected static ?string $navigationLabel = 'Zadaci';
+    protected static ?string $navigationLabel = 'Tasks';
 
-    protected static ?string $label = 'zadatak';
+    protected static ?string $label = 'task';
 
-    protected static ?string $pluralLabel = 'zadaci';
+    protected static ?string $pluralLabel = 'tasks';
 
     public static function form(Schema $schema): Schema
     {

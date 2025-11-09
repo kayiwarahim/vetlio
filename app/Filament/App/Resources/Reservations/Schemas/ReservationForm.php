@@ -28,30 +28,22 @@ class ReservationForm
         return $schema
             ->components([
                 Select::make('client_id')
-                    ->label('Klijent')
+                    ->label('Client')
                     ->options(Client::pluck('first_name', 'id'))
                     ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
-                    ->createOptionForm(function ($schema) {
-                        return ClientForm::configure($schema);
-                    })
-                    ->createOptionUsing(function ($data) {
-                        return Client::create($data)->getKey();
-                    })
+                    ->createOptionForm(fn($schema) => ClientForm::configure($schema))
+                    ->createOptionUsing(fn($data) => Client::create($data)->getKey())
                     ->required()
                     ->prefixIcon(PhosphorIcons::User)
                     ->live()
-                    ->afterStateUpdated(function ($state, $get, $set) {
-                        $set('patient_id', null);
-                    }),
+                    ->afterStateUpdated(fn($state, $get, $set) => $set('patient_id', null)),
 
                 Select::make('patient_id')
                     ->prefixIcon(PhosphorIcons::Dog)
-                    ->label('Pacijent')
+                    ->label('Patient')
                     ->required()
                     ->live()
-                    ->disabled(function ($get) {
-                        return !$get('client_id');
-                    })
+                    ->disabled(fn($get) => !$get('client_id'))
                     ->options(function (Get $get) {
                         $patients = Patient::query();
                         if ($get('client_id')) {
@@ -61,9 +53,8 @@ class ReservationForm
                         return $patients->pluck('name', 'id');
                     }),
 
-
                 Select::make('service_id')
-                    ->label('Usluga')
+                    ->label('Service')
                     ->live()
                     ->required()
                     ->options(function (Get $get) {
@@ -84,12 +75,9 @@ class ReservationForm
                         }
                     }),
 
-
                 Select::make('service_provider_id')
-                    ->label('Liječnik')
-                    ->disabled(function ($get) {
-                        return !$get('service_id');
-                    })
+                    ->label('Veterinarian')
+                    ->disabled(fn($get) => !$get('service_id'))
                     ->required()
                     ->options(function (Get $get) {
                         $users = User::query();
@@ -105,13 +93,10 @@ class ReservationForm
                     ->options(User::whereServiceProvider(true)->pluck('first_name', 'id'))
                     ->afterStateUpdated(fn($state, $get, $set) => self::checkAvailability($get, $set)),
 
-
                 Select::make('room_id')
                     ->required()
                     ->prefixIcon(PhosphorIcons::Bed)
-                    ->disabled(function ($get) {
-                        return !$get('service_id');
-                    })
+                    ->disabled(fn($get) => !$get('service_id'))
                     ->options(function (Get $get) {
                         $rooms = Room::query();
                         if ($get('service_id')) {
@@ -121,19 +106,18 @@ class ReservationForm
                         }
                         return $rooms->pluck('name', 'id');
                     })
-                    ->label('Prostorija')
+                    ->label('Room')
                     ->live(false, 500)
                     ->afterStateUpdated(fn($state, $get, $set) => self::checkAvailability($get, $set)),
-
 
                 Flex::make([
                     DateTimePicker::make('from')
                         ->live(false, 500)
                         ->required()
-                        ->label('Vrijeme od')
+                        ->label('Start time')
                         ->seconds(false)
                         ->afterStateUpdated(function ($state, $get, $set) {
-                            $reminders = $get('reservationReminders'); // svi repeater items
+                            $reminders = $get('reservationReminders');
                             if (!$reminders) return;
 
                             foreach ($reminders as $index => $item) {
@@ -142,9 +126,7 @@ class ReservationForm
 
                                 if (!$offsetAmount || !$offsetUnit) continue;
 
-
                                 $scheduled = self::calculateSendingTime($state, $offsetAmount, $offsetUnit);
-
                                 $set("reservationReminders.{$index}.scheduled_at", $scheduled);
                             }
 
@@ -157,7 +139,7 @@ class ReservationForm
                         }),
 
                     DateTimePicker::make('to')
-                        ->label('do')
+                        ->label('End time')
                         ->readOnly()
                         ->required()
                         ->seconds(false),
@@ -165,18 +147,18 @@ class ReservationForm
 
                 Textarea::make('note')
                     ->columnSpanFull()
-                    ->label('Napomena'),
+                    ->label('Note'),
 
                 Textarea::make('availability_conflicts')
                     ->columnSpanFull()
-                    ->label('Conflicts')
+                    ->label('Availability conflicts')
                     ->disabled(),
 
                 Tabs::make()
                     ->columnSpanFull()
                     ->contained(false)
                     ->tabs([
-                        Tabs\Tab::make('Obavijesti')
+                        Tabs\Tab::make('Reminders')
                             ->badge(fn(Get $get) => count($get('reservationReminders') ?? []))
                             ->icon(PhosphorIcons::Bell)
                             ->schema([
@@ -201,9 +183,9 @@ class ReservationForm
                                         }
                                     })
                                     ->maxItems(3)
-                                    ->hint('Definirajte do maksimalno 3 podsjetnika prema klijentu.')
-                                    ->label('Podsjetnici prema klijentu')
-                                    ->addActionLabel('Dodaj podsjetnik')
+                                    ->hint('You can define up to 3 reminders for the client.')
+                                    ->label('Client reminders')
+                                    ->addActionLabel('Add reminder')
                                     ->schema([
                                         TextInput::make('offset_amount')
                                             ->afterStateUpdated(function (Get $get, Set $set, $state) {
@@ -217,7 +199,7 @@ class ReservationForm
                                             ->minValue(1)
                                             ->inputMode('numeric')
                                             ->integer()
-                                            ->label('Koliko prije'),
+                                            ->label('Offset amount'),
 
                                         Select::make('offset_unit')
                                             ->default(3)
@@ -227,21 +209,21 @@ class ReservationForm
                                                 $set('scheduled_at', $scheduledAt);
                                             })
                                             ->prefixIcon(PhosphorIcons::Clock)
-                                            ->label('Jedinica (minuta, sati, dana)')
+                                            ->label('Time unit')
                                             ->columnSpan(2)
                                             ->live(true)
                                             ->options([
-                                                1 => 'Minuta',
-                                                2 => 'Sati',
-                                                3 => 'Dana',
-                                                4 => 'Tjedana'
+                                                1 => 'Minutes',
+                                                2 => 'Hours',
+                                                3 => 'Days',
+                                                4 => 'Weeks'
                                             ]),
                                         Select::make('channels')
                                             ->minItems(1)
                                             ->columnSpan(2)
                                             ->default(['email'])
                                             ->multiple()
-                                            ->label('Preko kanala')
+                                            ->label('Notification channels')
                                             ->options([
                                                 'email' => 'Email',
                                                 'sms' => 'SMS',
@@ -255,14 +237,13 @@ class ReservationForm
                                             ->date()
                                             ->readOnly()
                                             ->validationMessages([
-                                                'after' => 'Vrijeme slanja mora biti nakon početka rezervacije.',
+                                                'after' => 'The reminder time must be after the reservation start.',
                                             ])
                                             ->prefixIcon(PhosphorIcons::Bell)
-                                            ->label('Vrijeme slanja')
+                                            ->label('Scheduled at')
                                     ])
                             ])
                     ])
-
             ]);
     }
 
@@ -283,15 +264,12 @@ class ReservationForm
             $doctor = User::find($userId);
 
             if ($doctor && !$doctor->isAvailableAt($date, $start, $end)) {
-                $conflicts[] = 'Doktor je zauzet u zadanom periodu.';
+                $conflicts[] = 'The veterinarian is not available during the selected time.';
             }
 
             $room = Room::find($roomId);
-            if ($room) {
-                // Ako model Room koristi HasSchedules trait
-                if (!$room->isAvailableAt($date, $start, $end)) {
-                    $conflicts[] = 'Soba je zauzeta u zadanom periodu.';
-                }
+            if ($room && !$room->isAvailableAt($date, $start, $end)) {
+                $conflicts[] = 'The room is occupied during the selected time.';
             }
         }
 

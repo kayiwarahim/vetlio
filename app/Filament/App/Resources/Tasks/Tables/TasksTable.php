@@ -23,15 +23,11 @@ class TasksTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function ($query) {
-                return $query->with(['related']);
-            })
+            ->modifyQueryUsing(fn($query) => $query->with(['related']))
             ->columns([
                 TextColumn::make('title')
-                    ->icon(function (Task $record) {
-                        return $record->hasMedia() ? Heroicon::PaperClip : null;
-                    })
-                    ->label('Naziv')
+                    ->icon(fn(Task $record) => $record->hasMedia() ? Heroicon::PaperClip : null)
+                    ->label('Title')
                     ->description(function (Task $record) {
                         return $record->related->relatedLabel() . ': ' . $record->related->relatedValue();
                     })
@@ -39,45 +35,40 @@ class TasksTable
                     ->searchable(),
 
                 TextColumn::make('user.full_name')
-                    ->label('Kreirao')
+                    ->label('Created By')
                     ->searchable(),
 
                 TextColumn::make('related.name')
                     ->hidden()
-                    ->label('Vezan za')
+                    ->label('Related To')
                     ->searchable(),
 
                 TextColumn::make('status_id')
-                    ->formatStateUsing(function($state) {
-                        return TaskStatus::from($state)->getLabel();
-                    })
+                    ->formatStateUsing(fn($state) => TaskStatus::from($state)->getLabel())
                     ->badge()
                     ->label('Status')
                     ->sortable(),
 
                 TextColumn::make('assignedUsers.full_name')
                     ->limitList()
-                    ->label('Dodjeljeno'),
+                    ->label('Assigned To'),
 
                 TextColumn::make('start_at')
-                    ->label('Početak')
+                    ->label('Start Date')
                     ->date()
                     ->sortable(),
 
                 TextColumn::make('deadline_at')
-                    ->label('Rok za završetak')
-                    ->description(function (
-                        Task $record) {
-                        return $record?->deadline_at?->diffForHumans();
-                    })
+                    ->label('Deadline')
+                    ->description(fn(Task $record) => $record?->deadline_at?->diffForHumans())
                     ->date()
                     ->sortable(),
 
                 SpatieTagsColumn::make('tags')
-                    ->label('Oznake'),
+                    ->label('Tags'),
 
                 CreatedAtColumn::make('created_at'),
-                UpdatedAtColumn::make('updated_at')
+                UpdatedAtColumn::make('updated_at'),
             ])
             ->filters([
                 //

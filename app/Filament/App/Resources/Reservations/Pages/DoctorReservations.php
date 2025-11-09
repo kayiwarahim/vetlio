@@ -19,7 +19,7 @@ class DoctorReservations extends ListReservations
 
     protected static ?string $slug = 'doctor';
 
-    protected static ?string $title = 'Operater';
+    protected static ?string $title = 'Practitioner'; // or 'Doctor', depending on tone
 
     protected static string|BackedEnum|null $navigationIcon = PhosphorIcons::UserCheck;
 
@@ -28,31 +28,28 @@ class DoctorReservations extends ListReservations
         return [
             Action::make('new-medical-document')
                 ->icon(PhosphorIcons::FilePlus)
-                ->fillForm(function($data) {
+                ->fillForm(function ($data) {
                     $data['service_provider_id'] = auth()->id();
                 })
-                ->label('Novi nalaz')
+                ->label('New Medical Record')
                 ->outlined()
-                ->url(function () {
-                    return MedicalDocumentResource::getUrl('create');
-                }),
+                ->url(fn() => MedicalDocumentResource::getUrl('create')),
 
             CreateAction::make()
-                ->fillForm(function($data) {
+                ->fillForm(function ($data) {
                     $data['service_provider_id'] = auth()->id();
-
                     return $data;
                 })
                 ->color('success')
                 ->modalWidth(Width::SixExtraLarge)
-                ->label('Nova rezervacija')
+                ->label('New Reservation')
                 ->icon(PhosphorIcons::CalendarPlus),
         ];
     }
+
     public function table(Table $table): Table
     {
-        return parent::table($table)->modifyQueryUsing(function ($query) {
-            return $query->where('service_provider_id', auth()->id());
-        });
+        return parent::table($table)
+            ->modifyQueryUsing(fn($query) => $query->where('service_provider_id', auth()->id()));
     }
 }

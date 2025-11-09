@@ -35,38 +35,32 @@ class ReservationsTable
                 TextColumn::make('client.full_name')
                     ->searchable()
                     ->sortable()
-                    ->label('Klijent'),
+                    ->label('Client'),
 
                 TextColumn::make('patient.name')
                     ->searchable()
                     ->sortable()
-                    ->description(function ($record) {
-                        return $record->patient->breed->name . ', ' . $record->patient->species->name;
-                    })
-                    ->label('Pacijent'),
+                    ->description(fn($record) => $record->patient->breed->name . ', ' . $record->patient->species->name)
+                    ->label('Patient'),
 
                 TextColumn::make('from')
                     ->sortable()
                     ->date()
-                    ->description(function ($record) {
-                        return $record->from->format('H:i') . ' - ' . $record->to->format('H:i');
-                    })
-                    ->label('Vrijeme rezervacije'),
+                    ->description(fn($record) => $record->from->format('H:i') . ' - ' . $record->to->format('H:i'))
+                    ->label('Reservation Time'),
 
                 TextColumn::make('service.name')
                     ->searchable()
                     ->sortable()
-                    ->description(function ($record) {
-                        return $record->service->duration->format('i') . ' min';
-                    })
-                    ->label('Usluga'),
+                    ->description(fn($record) => $record->service->duration->format('i') . ' min')
+                    ->label('Service'),
 
                 TextColumn::make('serviceProvider.full_name')
                     ->searchable()
-                    ->label('Liječnik'),
+                    ->label('Doctor'),
 
                 TextColumn::make('room.name')
-                    ->label('Prostorija'),
+                    ->label('Room'),
             ])
             ->persistFiltersInSession()
             ->deferFilters(false)
@@ -90,10 +84,11 @@ class ReservationsTable
                 ->columns(2)
                 ->schema([
                     DatePicker::make('from')
-                        ->label('Od')
+                        ->label('From')
                         ->default(now()->startOfDay()),
+
                     DatePicker::make('to')
-                        ->label('Do')
+                        ->label('To')
                         ->default(now()->endOfDay()),
                 ])
                 ->query(function (Builder $query, array $data): Builder {
@@ -111,11 +106,12 @@ class ReservationsTable
             SelectFilter::make('service_provider_id')
                 ->native(false)
                 ->relationship('serviceProvider', 'first_name')
-                ->label('Liječnik'),
+                ->label('Doctor'),
+
             SelectFilter::make('room_id')
                 ->native(false)
                 ->relationship('room', 'name')
-                ->label('Prostorija')
+                ->label('Room'),
         ];
     }
 
@@ -126,27 +122,23 @@ class ReservationsTable
     {
         return [
             MoveBack::make('back')
-                ->visible(function ($record) {
-                    return $record->status_id > ReservationStatus::Ordered->value;
-                }),
+                ->visible(fn($record) => $record->status_id > ReservationStatus::Ordered->value),
+
             MoveRight::make('right')
-                ->visible(function ($record) {
-                    return $record->status_id < ReservationStatus::Completed->value;
-                }),
+                ->visible(fn($record) => $record->status_id < ReservationStatus::Completed->value),
+
             Action::make('create-medical-document')
-                ->label('Kreiraj nalaz')
+                ->label('Create Medical Record')
                 ->icon(PhosphorIcons::FilePlus)
-                ->visible(function ($record) {
-                    return $record->status_id == ReservationStatus::InProcess->value;
-                })
-                ->url(function ($record) {
-                    return MedicalDocumentResource::getUrl('create', ['reservationId' => $record->uuid]);
-                }),
+                ->visible(fn($record) => $record->status_id == ReservationStatus::InProcess->value)
+                ->url(fn($record) => MedicalDocumentResource::getUrl('create', ['reservationId' => $record->uuid])),
+
             ViewAction::make(),
+
             ActionGroup::make([
                 ClientCardAction::make(),
                 EditAction::make(),
-                DeleteAction::make()
+                DeleteAction::make(),
             ]),
         ];
     }

@@ -32,7 +32,7 @@ class TaskForm
             ->components([
                 TextInput::make('title')
                     ->columnSpanFull()
-                    ->label('Naziv')
+                    ->label('Title')
                     ->required(),
 
                 Grid::make(2)
@@ -41,15 +41,15 @@ class TaskForm
                         DatePicker::make('start_at')
                             ->required()
                             ->default(now())
-                            ->label('Početak'),
+                            ->label('Start Date'),
 
                         DatePicker::make('deadline_at')
                             ->after('start_at')
-                            ->label('Rok za završetak'),
+                            ->label('Deadline'),
                     ]),
 
                 Select::make('priority_id')
-                    ->label('Prioritet')
+                    ->label('Priority')
                     ->default(1)
                     ->options(Priority::class)
                     ->required(),
@@ -57,54 +57,58 @@ class TaskForm
                 Select::make('assignedUsers')
                     ->relationship('assignedUsers', 'first_name')
                     ->options(User::get()->pluck('full_name', 'id'))
-                    ->label('Dodjeljeno')
+                    ->label('Assigned To')
                     ->multiple(),
 
                 SpatieTagsInput::make('tags')
-                    ->label('Oznake'),
+                    ->label('Tags'),
 
                 MorphToSelect::make('related')
                     ->contained(false)
-                    ->label('Vezan za')
+                    ->label('Related To')
                     ->required()
                     ->native(false)
                     ->columnSpanFull()
                     ->columns(2)
                     ->extraAttributes([
-                        'class' => 'morph-related-select'
+                        'class' => 'morph-related-select',
                     ])
                     ->types([
                         MorphToSelect\Type::make(Client::class)
-                            ->label('Klijent')
+                            ->label('Client')
                             ->searchColumns(['first_name'])
                             ->titleAttribute('first_name'),
+
                         MorphToSelect\Type::make(Patient::class)
-                            ->label('Pacijent')
+                            ->label('Patient')
                             ->searchColumns(['name'])
                             ->titleAttribute('name'),
+
                         MorphToSelect\Type::make(Invoice::class)
-                            ->label('Račun')
+                            ->label('Invoice')
                             ->searchColumns(['code'])
                             ->titleAttribute('code'),
+
                         MorphToSelect\Type::make(MedicalDocument::class)
-                            ->label('Nalaz')
+                            ->label('Medical Record')
                             ->searchColumns(['code'])
                             ->titleAttribute('code'),
-                    ])->modifyKeySelectUsing(function (Select $select) {
+                    ])
+                    ->modifyKeySelectUsing(function (Select $select) {
                         $select->searchable(true);
                     }),
 
                 RichEditor::make('description')
                     ->extraAttributes([
-                        'style' => 'min-height: 200px'
+                        'style' => 'min-height: 200px',
                     ])
-                    ->label('Opis')
+                    ->label('Description')
                     ->columnSpanFull(),
 
                 SpatieMediaLibraryFileUpload::make('attachments')
-                    ->label('Prilozi')
+                    ->label('Attachments')
                     ->columnSpanFull()
-                    ->multiple()
+                    ->multiple(),
             ]);
     }
 }

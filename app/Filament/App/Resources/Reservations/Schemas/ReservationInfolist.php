@@ -40,11 +40,11 @@ class ReservationInfolist
             ->danger()
             ->icon(PhosphorIcons::CalendarMinus)
             ->border()
-            ->title('Rezervacije je otkazana')
+            ->title('Reservation Canceled')
             ->description(function ($record) {
-                $cancelReason = $record->cancel_reason ?? 'Nema razloga';
+                $cancelReason = $record->cancel_reason ?? 'No reason provided';
 
-                return "Razlog otkazivanja: $cancelReason";
+                return "Cancellation reason: $cancelReason";
             })
             ->columnSpanFull();
     }
@@ -60,7 +60,7 @@ class ReservationInfolist
                 TextEntry::make('date')
                     ->icon(PhosphorIcons::Calendar)
                     ->date('d.m.Y')
-                    ->label('Datum'),
+                    ->label('Date'),
 
                 TextEntry::make('from')
                     ->icon(PhosphorIcons::Clock)
@@ -68,27 +68,27 @@ class ReservationInfolist
                         $diff = $record->from->diffInMinutes($record->to);
                         return $record->from->format('H:i') . ' - ' . $record->to->format('H:i') . ' (' . $diff . ' min)';
                     })
-                    ->label('Trajanje'),
+                    ->label('Duration'),
 
                 TextEntry::make('service.name')
                     ->icon(PhosphorIcons::Hand)
                     ->state(function ($record) {
                         return $record->service->name . ' (' . Number::currency($record->service->currentPrice->price_with_vat) . ')';
                     })
-                    ->label('Usluga'),
+                    ->label('Service'),
 
                 TextEntry::make('serviceProvider.full_name')
                     ->icon(PhosphorIcons::User)
-                    ->label('Liječnik'),
+                    ->label('Veterinarian'),
 
                 TextEntry::make('room.name')
                     ->icon(PhosphorIcons::Bed)
-                    ->label('Prostorija'),
+                    ->label('Room'),
 
                 TextEntry::make('note')
                     ->columnSpanFull()
                     ->default('-')
-                    ->label('Napomena')
+                    ->label('Note')
                     ->icon(PhosphorIcons::Note),
             ]);
     }
@@ -98,7 +98,7 @@ class ReservationInfolist
         return Grid::make(2)
             ->columnSpanFull()
             ->schema([
-                Fieldset::make('Klijent')
+                Fieldset::make('Client')
                     ->schema([
                         Flex::make([
                             ImageEntry::make('client.avatar_url')
@@ -123,7 +123,7 @@ class ReservationInfolist
                         ])->gap(false)->columnSpanFull(),
                     ]),
 
-                Fieldset::make('Pacijent')
+                Fieldset::make('Patient')
                     ->schema([
                         Flex::make([
                             ImageEntry::make('patient.avatar_url')
@@ -148,7 +148,6 @@ class ReservationInfolist
                                 ])
                         ])->gap(false)->columnSpanFull(),
                     ])
-
             ]);
     }
 
@@ -159,7 +158,7 @@ class ReservationInfolist
                 ->outlined(),
             Action::make('cancel-reservation')
                 ->outlined()
-                ->label('Otkaži rezervaciju')
+                ->label('Cancel Reservation')
                 ->color('danger')
                 ->icon(PhosphorIcons::CalendarMinus)
         ]);

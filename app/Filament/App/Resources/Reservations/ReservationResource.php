@@ -24,11 +24,11 @@ class ReservationResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'from';
 
-    protected static ?string $navigationLabel = 'Rezervacije';
+    protected static ?string $navigationLabel = 'Reservations';
 
-    protected static ?string $label = 'rezervacija';
+    protected static ?string $label = 'reservation';
 
-    protected static ?string $pluralLabel = 'rezervacije';
+    protected static ?string $pluralLabel = 'reservations';
 
     public static function form(Schema $schema): Schema
     {

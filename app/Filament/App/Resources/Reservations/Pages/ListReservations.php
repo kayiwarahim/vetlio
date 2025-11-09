@@ -24,16 +24,14 @@ class ListReservations extends ListRecords
         return [
             Action::make('new-medical-document')
                 ->icon(PhosphorIcons::FilePlus)
-                ->label('Novi nalaz')
+                ->label('New Medical Record')
                 ->outlined()
-                ->url(function () {
-                    return MedicalDocumentResource::getUrl('create');
-                }),
+                ->url(fn() => MedicalDocumentResource::getUrl('create')),
 
             CreateAction::make()
                 ->color('success')
                 ->modalWidth(Width::SixExtraLarge)
-                ->label('Nova rezervacija')
+                ->label('New Reservation')
                 ->icon(PhosphorIcons::CalendarPlus),
         ];
     }
@@ -61,7 +59,6 @@ class ListReservations extends ListRecords
             ->groupBy('status_id')
             ->pluck('total', 'status_id');
 
-
         $tabs = [];
 
         foreach (ReservationStatus::cases() as $status) {
@@ -73,8 +70,7 @@ class ListReservations extends ListRecords
                         ->when($from, fn($q) => $q->whereDate('date', '>=', $from))
                         ->when($to, fn($q) => $q->whereDate('date', '<=', $to))
                         ->when($room, fn($q) => $q->where('room_id', $room))
-                        ->when($serviceProvider, fn($q) => $q->where('service_provider_id', $serviceProvider)
-                        );
+                        ->when($serviceProvider, fn($q) => $q->where('service_provider_id', $serviceProvider));
                 });
         }
 
