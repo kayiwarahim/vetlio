@@ -9,6 +9,8 @@ use App\Traits\Organisationable;
 use Guava\Calendar\Contracts\Eventable;
 use Guava\Calendar\ValueObjects\CalendarEvent;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,6 +55,16 @@ class Reservation extends Model implements Eventable
         'canceled_at' => 'datetime',
         'confirmed_at' => 'datetime',
     ];
+
+    #[Scope]
+    public function canceled(Builder $query, $canceled): void
+    {
+        $query->when(
+            $canceled,
+            fn($q) => $q->whereNotNull('canceled_at'),
+            fn($q) => $q->whereNull('canceled_at'),
+        );
+    }
 
     public function branch(): BelongsTo
     {

@@ -4,6 +4,7 @@ namespace App\Filament\App\Resources\Reservations\Tables;
 
 use App\Enums\Icons\PhosphorIcons;
 use App\Enums\ReservationStatus;
+use App\Filament\App\Actions\CancelReservationAction;
 use App\Filament\App\Actions\ClientCardAction;
 use App\Filament\App\Resources\MedicalDocuments\MedicalDocumentResource;
 use App\Filament\App\Resources\Reservations\Actions\MoveBack;
@@ -115,9 +116,6 @@ class ReservationsTable
         ];
     }
 
-    /**
-     * @return array
-     */
     public static function getRecordActions(): array
     {
         return [
@@ -139,6 +137,7 @@ class ReservationsTable
                 ClientCardAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
+                CancelReservationAction::make(),
             ]),
         ];
     }

@@ -3,21 +3,17 @@
 namespace App\Filament\App\Widgets;
 
 use App\Enums\CalendarEventsType;
-use App\Enums\Icons\PhosphorIcons;
+use App\Filament\App\Actions\CancelReservationAction;
 use App\Filament\App\Resources\Reservations\Schemas\ReservationForm;
 use App\Models\Client;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Queries\Holidays;
-use App\Services\ReservationService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Guava\Calendar\Concerns\CalendarAction;
 use Guava\Calendar\Enums\CalendarViewType;
@@ -126,6 +122,7 @@ class CalendarWidget extends BaseCalendarWidget
     public function getReservations(FetchInfo $info)
     {
         return Reservation::query()
+            ->canceled(false)
             ->with(['client', 'serviceProvider', 'service'])
             ->when($this->selectedClient, fn($q) => $q->where('client_id', $this->selectedClient))
             ->whereDate('to', '>=', $info->start)
@@ -243,31 +240,9 @@ class CalendarWidget extends BaseCalendarWidget
         return [
             $this->viewAction(),
             $this->editAction(),
-            Action::make('cancel-reservation')
-                ->label('Cancel reservation')
-                ->icon(PhosphorIcons::CalendarX)
-                ->modalWidth(Width::Large)
-                ->color('danger')
-                ->model(Reservation::class)
-                ->modalSubmitActionLabel('Cancel reservation')
-                ->modalIcon(PhosphorIcons::CalendarX)
-                ->modalHeading('Cancel reservation')
-                ->schema([
-                    Textarea::make('reason')
-                        ->label('Cancel reason')
-                        ->placeholder('Enter cancel reason')
-                        ->required()
-                        ->rows(4),
-
-                    Toggle::make('send_email')
-                        ->hint('Send email to client about cancellation')
-                        ->label('Send email')
-
-                ])
-                ->action(function (array $data, $record, $action, $livewire) {
-                    $reservation = $livewire->getEventRecord() ?? null;
-
-                    app(ReservationService::class)->cancel($reservation, $data['reason'], $data['send_email']);
+            CancelReservationAction::make()
+                ->record(function ($livewire) {
+                    return $livewire->getEventRecord();
                 })
         ];
     }
