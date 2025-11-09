@@ -18,37 +18,37 @@ class PaymentsTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->label('Šifra')
+                    ->label('Code')
                     ->searchable(),
 
                 TextColumn::make('branch.name')
-                    ->label('Poslovnica')
+                    ->label('Branch')
                     ->sortable(),
 
                 TextColumn::make('invoice.code')
                     ->searchable()
-                    ->label('Račun'),
+                    ->label('Invoice'),
 
                 TextColumn::make('user.full_name')
-                    ->label('Kreirao')
+                    ->label('Created by')
                     ->sortable(),
 
                 TextColumn::make('payment_method_id')
-                    ->label('Način plaćanja')
+                    ->label('Payment method')
                     ->sortable(),
 
                 TextColumn::make('client.full_name')
                     ->searchable()
-                    ->label('Klijent'),
+                    ->label('Client'),
 
                 TextColumn::make('payment_at')
                     ->dateTime()
-                    ->label('Datum uplate')
+                    ->label('Payment date')
                     ->sortable(),
 
                 TextColumn::make('amount')
-                    ->summarize(Sum::make()->money('EUR', 100)->label('Ukupan iznos'))
-                    ->label('Iznos')
+                    ->summarize(Sum::make()->money('EUR', 100)->label('Total amount'))
+                    ->label('Amount')
                     ->numeric(2)
                     ->sortable()
                     ->suffix(' EUR')

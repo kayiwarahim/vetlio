@@ -10,23 +10,23 @@ use Illuminate\Support\Carbon;
 class ValidPriceDate implements ValidationRule
 {
     public function __construct(
-        protected $price, protected $priceable,
-    )
-    {
+        protected $price,
+        protected $priceable,
+    ) {
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!$this->priceable) {
+        if (! $this->priceable) {
             return;
         }
 
         $latest = Price::query()
-            ->when($this->price, fn($q) => $q->whereKeyNot($this->price->id))
+            ->when($this->price, fn ($q) => $q->whereKeyNot($this->price->id))
             ->whereMorphedTo('priceable', $this->priceable)
             ->max('valid_from_at');
 
-        if (!$latest) {
+        if (! $latest) {
             return;
         }
 
@@ -34,7 +34,7 @@ class ValidPriceDate implements ValidationRule
         $newDate = Carbon::parse($value);
 
         if ($newDate->lte($latestDate)) {
-            $fail("Datum mora biti veći od zadnjeg važećeg datuma cijene ({$latestDate->format('d.m.Y')}).");
+            $fail("The date must be later than the last valid price date ({$latestDate->format('d.m.Y')}).");
         }
     }
 }

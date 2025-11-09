@@ -15,9 +15,9 @@ class ViewPatient extends ViewRecord
 {
     protected static string $resource = PatientResource::class;
 
-    protected static ?string $title = 'Pregled';
+    protected static ?string $title = 'View';
 
-    protected static ?string $navigationLabel = 'Pregled';
+    protected static ?string $navigationLabel = 'View';
 
     public function getSubheading(): string|Htmlable|null
     {
@@ -29,15 +29,16 @@ class ViewPatient extends ViewRecord
         return [
             ClientCardAction::make()
                 ->record($this->getRecord()->client),
+
             Action::make('unarchive')
                 ->visible(fn() => $this->getRecord()->archived_at != null)
-                ->label('Dearhiviraj')
+                ->label('Unarchive')
                 ->icon(PhosphorIcons::FilePlus)
                 ->color('success')
                 ->modalIcon(PhosphorIcons::FilePlus)
-                ->modalHeading('Dearhiviranje pacijenta')
-                ->modalSubmitActionLabel('Dearhiviraj')
-                ->successNotificationTitle('Pacijent je dearhiviran')
+                ->modalHeading('Unarchive patient')
+                ->modalSubmitActionLabel('Unarchive')
+                ->successNotificationTitle('The patient has been successfully unarchived')
                 ->requiresConfirmation()
                 ->action(function ($data) {
                     $this->getRecord()->update([
@@ -46,28 +47,30 @@ class ViewPatient extends ViewRecord
                         'archived_by' => null,
                     ]);
                 }),
+
             Action::make('archive')
                 ->visible(fn() => $this->getRecord()->archived_at === null)
-                ->label('Arhiviraj')
+                ->label('Archive')
                 ->icon(PhosphorIcons::FileMinus)
                 ->color('danger')
                 ->modalIcon(PhosphorIcons::FileMinus)
-                ->modalHeading('Arhiviranje pacijenta')
-                ->modalSubmitActionLabel('Arhiviraj')
+                ->modalHeading('Archive patient')
+                ->modalSubmitActionLabel('Archive')
                 ->schema([
                     Textarea::make('archived_note')
                         ->rows(3)
-                        ->label('Razlog arhiviranja')
+                        ->label('Reason for archiving'),
                 ])
-                ->successNotificationTitle('Pacijent je arhiviran')
+                ->successNotificationTitle('The patient has been archived')
                 ->requiresConfirmation()
                 ->action(function ($data) {
                     $this->getRecord()->update([
                         'archived_at' => now(),
-                        'archived_note' => (string)$data['archived_note'],
+                        'archived_note' => (string) $data['archived_note'],
                         'archived_by' => auth()->user()->id,
                     ]);
                 }),
+
             EditAction::make(),
         ];
     }

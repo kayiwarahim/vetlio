@@ -32,11 +32,11 @@ class PatientResource extends Resource
 
     protected static bool $isScopedToTenant = false;
 
-    protected static ?string $navigationLabel = 'Pacijenti';
+    protected static ?string $navigationLabel = 'Patients';
 
-    protected static ?string $label = 'pacijent';
+    protected static ?string $label = 'patient';
 
-    protected static ?string $pluralLabel = 'pacijenti';
+    protected static ?string $pluralLabel = 'patients';
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -56,9 +56,9 @@ class PatientResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'Vrsta' => $record->species->name,
-            'Pasmina' => $record->breed->name ?? '-',
-            'Dob' => $record->date_of_birth ? $record->date_of_birth->age . ' god.' : '-',
+            'Species' => $record->species->name,
+            'Breed' => $record->breed->name ?? '-',
+            'Age' => $record->date_of_birth ? $record->date_of_birth->age . ' yrs' : '-',
         ];
     }
 
@@ -90,9 +90,7 @@ class PatientResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -35,7 +35,7 @@ class PatientsTable
                         return $record->breed->name . ', ' . $record->species->name;
                     })
                     ->searchable()
-                    ->label('Ime'),
+                    ->label('Name'),
 
                 TextColumn::make('gender_id')
                     ->sortable()
@@ -43,15 +43,15 @@ class PatientsTable
                         return PatientGender::from($state)->getLabel();
                     })
                     ->searchable()
-                    ->label('Spol'),
+                    ->label('Gender'),
 
                 TextColumn::make('date_of_birth')
-                    ->label('Datum rođenja')
+                    ->label('Date of Birth')
                     ->date()
                     ->sortable()
                     ->description(function ($state) {
                         if ($state != null) {
-                            return Carbon::parse($state)->diffInYears(now()) . " godina";
+                            return Carbon::parse($state)->diffInYears(now()) . ' years old';
                         }
 
                         return null;
@@ -65,19 +65,17 @@ class PatientsTable
                                 ->orWhere('last_name', 'like', "%{$search}%");
                         });
                     })
-                    ->label('Vlasnik'),
+                    ->label('Owner'),
 
                 TextColumn::make('remarks')
                     ->searchable()
-                    ->label('Opaska'),
+                    ->label('Notes'),
             ])
             ->recordActions([
                 ViewAction::make(),
                 ClientCardAction::make()
                     ->hiddenLabel()
-                    ->record(function ($record) {
-                        return $record->client;
-                    }),
+                    ->record(fn($record) => $record->client),
                 EditAction::make(),
             ])
             ->toolbarActions([

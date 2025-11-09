@@ -20,41 +20,41 @@ class PaymentForm
         return $schema
             ->components([
                 TextInput::make('code')
-                    ->label('Šifra uplate')
+                    ->label('Payment Code')
                     ->disabled(),
 
                 Select::make('branch_id')
                     ->relationship('branch', 'name')
                     ->default(Filament::getTenant()->id)
                     ->required()
-                    ->label('Poslovnica'),
+                    ->label('Branch'),
 
                 DateTimePicker::make('payment_at')
                     ->default(now())
-                    ->label('Datum uplate')
+                    ->label('Payment Date')
                     ->required(),
 
                 TextInput::make('amount')
                     ->required()
-                    ->formatStateUsing(function($state) {
+                    ->formatStateUsing(function ($state) {
                         return Number::format($state, 2);
                     })
-                    ->label('Iznos')
+                    ->label('Amount')
                     ->suffixIcon(PhosphorIcons::CurrencyEur),
 
                 ToggleButtons::make('payment_method_id')
                     ->grouped()
-                    ->label('Način plaćanja')
+                    ->label('Payment Method')
                     ->required()
                     ->options(PaymentMethod::class),
 
                 Select::make('client_id')
                     ->relationship('client', 'first_name')
                     ->required()
-                    ->label('Klijent'),
+                    ->label('Client'),
 
                 Textarea::make('note')
-                    ->label('Napomena')
+                    ->label('Note')
                     ->columnSpanFull(),
             ]);
     }

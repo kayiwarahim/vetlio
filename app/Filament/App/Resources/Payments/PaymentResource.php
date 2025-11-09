@@ -28,13 +28,13 @@ class PaymentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'code';
 
-    protected static ?string $navigationLabel = 'Uplate';
+    protected static ?string $navigationLabel = 'Payments';
 
-    protected static ?string $label = 'uplata';
+    protected static ?string $label = 'payment';
 
-    protected static ?string $pluralLabel = 'uplate';
+    protected static ?string $pluralLabel = 'payments';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Financije';
+    protected static string | UnitEnum | null $navigationGroup = 'Finance';
 
     public static function form(Schema $schema): Schema
     {

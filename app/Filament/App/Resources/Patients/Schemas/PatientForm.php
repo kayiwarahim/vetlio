@@ -23,7 +23,7 @@ class PatientForm
         return $schema
             ->components([
                 FileUpload::make('photo')
-                    ->label('Slika')
+                    ->label('Photo')
                     ->columnSpanFull()
                     ->alignCenter()
                     ->avatar()
@@ -33,11 +33,11 @@ class PatientForm
                 Grid::make(2)
                     ->schema([
                         TextInput::make('name')
-                            ->label('Naziv')
+                            ->label('Name')
                             ->required(),
 
                         Select::make('client_id')
-                            ->label('Vlasnik')
+                            ->label('Owner')
                             ->columnSpan(1)
                             ->relationship('client', 'full_name')
                             ->options(Client::get()->pluck('full_name', 'id'))
@@ -48,18 +48,18 @@ class PatientForm
                     ->columns(3)
                     ->grouped()
                     ->options(PatientGender::class)
-                    ->label('Spol')
+                    ->label('Gender')
                     ->inline(),
 
                 Grid::make(2)
                     ->columnSpan(1)
                     ->schema([
                         DatePicker::make('date_of_birth')
-                            ->label('Datum rođenja')
+                            ->label('Date of Birth')
                             ->date(),
 
                         TextInput::make('color')
-                            ->label('Boja'),
+                            ->label('Color'),
                     ]),
 
                 Grid::make(2)
@@ -72,7 +72,7 @@ class PatientForm
                             ->afterStateUpdated(function (Set $set) {
                                 $set('breed_id', null);
                             })
-                            ->label('Vrsta'),
+                            ->label('Species'),
 
                         Select::make('breed_id')
                             ->options(function (Get $get) {
@@ -81,48 +81,43 @@ class PatientForm
                                 }
                                 return Breed::pluck('name', 'id');
                             })
-                            ->label('Pasmina')
-                            ->disabled(function (Get $get) {
-                                return $get('species_id') == null;
-                            })
+                            ->label('Breed')
+                            ->disabled(fn(Get $get) => $get('species_id') == null)
                             ->required(),
                     ]),
-
 
                 Grid::make(2)
                     ->schema([
                         ToggleButtons::make('dangerous')
-                            ->label('Opasan pacijent?')
+                            ->label('Is the patient dangerous?')
                             ->default(false)
                             ->grouped()
                             ->inline()
                             ->live()
-                            ->boolean('Da', 'Ne')
+                            ->boolean('Yes', 'No')
                             ->colors([
                                 1 => 'danger',
-                                0 => 'success'
+                                0 => 'success',
                             ]),
 
                         TextInput::make('dangerous_note')
-                            ->visible(function (Get $get) {
-                                return $get('dangerous');
-                            })
-                            ->label('Opasan (Napomena)'),
+                            ->visible(fn(Get $get) => $get('dangerous'))
+                            ->label('Dangerous (Note)'),
                     ]),
-
 
                 Grid::make(2)
                     ->schema([
                         Textarea::make('remarks')
                             ->columnSpanFull()
-                            ->placeholder('Unesite opaske, napomene za pacijenta..')
-                            ->label('Opaske'),
+                            ->placeholder('Enter remarks or notes about the patient...')
+                            ->label('Remarks'),
 
                         Textarea::make('allergies')
                             ->columnSpanFull()
-                            ->placeholder('Unesite alergije..')
-                            ->label('Alergije'),
-                    ])->columnSpanFull()
+                            ->placeholder('Enter any allergies...')
+                            ->label('Allergies'),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 }

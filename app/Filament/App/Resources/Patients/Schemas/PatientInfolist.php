@@ -18,13 +18,13 @@ class PatientInfolist
                     ->border()
                     ->actions([
                         Action::make('unarchive-patient')
-                            ->label('Dearhiviraj')
+                            ->label('Unarchive')
                             ->icon(PhosphorIcons::FilePlus)
                             ->link()
                             ->modalIcon(PhosphorIcons::FilePlus)
-                            ->modalHeading('Dearhiviranje pacijenta')
-                            ->modalSubmitActionLabel('Dearhiviraj')
-                            ->successNotificationTitle('Pacijent je dearhiviran')
+                            ->modalHeading('Unarchive patient')
+                            ->modalSubmitActionLabel('Unarchive')
+                            ->successNotificationTitle('The patient has been successfully unarchived')
                             ->requiresConfirmation()
                             ->action(function ($record) {
                                 $record->update([
@@ -32,14 +32,16 @@ class PatientInfolist
                                     'archived_note' => null,
                                     'archived_by' => null,
                                 ]);
-                            })
+                            }),
                     ])
                     ->columnSpanFull()
                     ->visible(fn($record) => $record->archived_at)
-                    ->title('Pacijent je arhiviran')
+                    ->title('Patient is archived')
                     ->description(function ($record) {
-                        $archivedNote = $record->archived_note ? 'Razlog arhiviranja: ' . $record->archived_note : '-';
-                        return $archivedNote ? $archivedNote : 'Nema razloga';
+                        $archivedNote = $record->archived_note
+                            ? 'Reason for archiving: ' . $record->archived_note
+                            : 'No reason provided';
+                        return $archivedNote;
                     }),
 
                 SimpleAlert::make('dangerous-info')
@@ -47,10 +49,12 @@ class PatientInfolist
                     ->border()
                     ->columnSpanFull()
                     ->visible(fn($record) => $record->dangerous && $record->archived_at == null)
-                    ->title('Pacijent je opasan')
+                    ->title('Patient marked as dangerous')
                     ->description(function ($record) {
-                        return $record->dangerous_note ? 'Napomena: ' . $record->dangerous_note : null;
-                    })
+                        return $record->dangerous_note
+                            ? 'Note: ' . $record->dangerous_note
+                            : null;
+                    }),
             ]);
     }
 }

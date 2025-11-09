@@ -17,11 +17,11 @@ class PatientMedicalDocuments extends ManageRelatedRecords
 
     protected static ?string $relatedResource = MedicalDocumentResource::class;
 
-    protected static ?string $navigationLabel = 'Nalazi';
+    protected static ?string $navigationLabel = 'Medical Records';
 
-    protected static ?string $title = 'Nalazi';
+    protected static ?string $title = 'Medical Records';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Medicinska dokumentacija';
+    protected static string|UnitEnum|null $navigationGroup = 'Medical Documentation';
 
     public function getSubheading(): string|Htmlable|null
     {
