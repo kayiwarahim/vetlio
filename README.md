@@ -161,16 +161,6 @@ Code style: `vendor/bin/pint` · Static analysis: `vendor/bin/phpstan analyse`
 
 ---
 
-## Roadmap
-
-* [ ] Advanced availability (buffers, resources)
-* [ ] E‑invoice integrations
-* [ ] Google Calendar sync
-* [ ] SMS/Email templates & flows
-* [ ] Translations (EN, HR, …)
-
----
-
 ## Notes
 
 * Cron: `* * * * * php artisan schedule:run`
