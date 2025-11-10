@@ -43,7 +43,8 @@ class ListReservations extends ListRecords
                 ->modalDescription(function () {
                     return 'You have ' . count($this->appointmentRequests) . ' appointment requests';
                 })
-
+                ->hiddenLabel()
+                ->tooltip('Appointment requests')
                 ->badge(function () {
                     return count($this->appointmentRequests);
                 })
@@ -54,7 +55,7 @@ class ListReservations extends ListRecords
                     SimpleAlert::make('no-requests')
                         ->success()
                         ->border()
-                        ->visible(fn() => count($this->appointmentRequests)<1)
+                        ->visible(fn() => count($this->appointmentRequests) < 1)
                         ->icon(PhosphorIcons::CheckCircleBold)
                         ->columnSpanFull()
                         ->title('No requests available'),
