@@ -45,7 +45,6 @@ class Dashboard extends Page implements HasSchemas
             ])
             ->label('New announcements')
             ->visible(fn() => auth()->user()->unreadAnnouncements()->exists())
-            ->visible(false)
             ->icon(PhosphorIcons::Bell)
             ->modalHeading(fn($record) => $record?->title ?? 'No new announcements')
             ->modalDescription(fn($record) => $record ? 'Announcement from: ' . $record->user->full_name : null)
