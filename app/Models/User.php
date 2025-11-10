@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Observers\UserObserver;
+use App\Traits\HasAnnouncements;
 use App\Traits\Organisationable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasDefaultTenant;
@@ -28,7 +29,12 @@ use Zap\Models\Concerns\HasSchedules;
 class User extends Authenticatable implements HasTenants, HasDefaultTenant, FilamentUser, Resourceable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Organisationable, SoftDeletes, HasSchedules;
+    use HasFactory,
+        Notifiable,
+        Organisationable,
+        SoftDeletes,
+        HasSchedules,
+        HasAnnouncements;
 
     /**
      * The attributes that are mass assignable.

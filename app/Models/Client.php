@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\TaskRelated;
+use App\Traits\HasAnnouncements;
 use App\Traits\Organisationable;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
@@ -24,7 +25,7 @@ use Swindon\FilamentHashids\Traits\HasHashid;
 class Client extends Authenticatable implements HasName, HasAvatar, MustVerifyEmail, TaskRelated
 {
     /** @use HasFactory<\Database\Factories\ClientFactory> */
-    use HasFactory, SoftDeletes, Notifiable, Organisationable, HasTags,HasHashid;
+    use HasFactory, SoftDeletes, Notifiable, Organisationable, HasTags, HasHashid, HasAnnouncements;
 
     protected $fillable = [
         'first_name',
@@ -155,7 +156,10 @@ class Client extends Authenticatable implements HasName, HasAvatar, MustVerifyEm
     {
         return $this->hasMany(Patient::class, 'client_id');
     }
-
+    public function nextUnreadAnnouncement(): ?\App\Models\Announcement
+    {
+        return $this->unreadAnnouncements()->orderBy('created_at')->first();
+    }
     public function relatedValue()
     {
         return $this->full_name;
