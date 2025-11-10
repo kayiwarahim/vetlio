@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->font('Mulish')
             ->maxContentWidth(Width::ScreenTwoExtraLarge)
             ->spa()
             ->sidebarCollapsibleOnDesktop()
