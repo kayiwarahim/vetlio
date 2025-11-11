@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\App\Clusters\Settings\SettingsCluster;
+use App\Filament\App\Pages\Dashboard;
 use App\Filament\App\Resources\Clients\ClientResource;
 use App\Filament\App\Resources\Invoices\Pages\NotPayedInvoices;
 use App\Filament\App\Resources\Patients\PatientResource;
@@ -20,7 +21,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
