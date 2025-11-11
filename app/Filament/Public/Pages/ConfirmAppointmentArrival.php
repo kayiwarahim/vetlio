@@ -5,6 +5,7 @@ namespace App\Filament\Public\Pages;
 use App\Enums\Icons\PhosphorIcons;
 use App\Filament\App\Entries\PlaceholderEntry;
 use App\Models\Reservation;
+use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Infolists\Components\ImageEntry;
@@ -88,6 +89,24 @@ class ConfirmAppointmentArrival extends Page implements HasSchemas
                             ]),
                     ]),
 
+                SimpleAlert::make('confirmed-note')
+                    ->columnSpanFull()
+                    ->color(function () {
+                        return $this->appointment->confirmed_status_id == 1 ? 'success' : 'danger';
+                    })
+                    ->title(function() {
+                        return 'Appointment confirmed at ' . $this->appointment->confirmed_at->format('d.m.Y H:i');
+                    })
+                    ->visible(function () {
+                        return $this->appointment->confirmed_at;
+                    })
+                    ->icon(function () {
+                        return $this->appointment->confirmed_status_id == 1 ? PhosphorIcons::CheckCircleBold : PhosphorIcons::XCircleBold;
+                    })
+                    ->description(function() {
+                        return $this->appointment->confirmed_status_id == 1 ? 'You have confirmed that you will arrive at the appointment.' : 'You have rejected the appointment.';
+                    }),
+
                 Grid::make(2)
                     ->schema([
                         TextEntry::make('from')
@@ -123,7 +142,9 @@ class ConfirmAppointmentArrival extends Page implements HasSchemas
                 PlaceholderEntry::make('divider2')
                     ->extraAttributes([
                         'class' => 'mt-3 mb-3 border-gray-200'
-                    ]),
+                    ])->visible(function () {
+                        return !$this->appointment->confirmed_at;
+                    }),
 
                 ActionGroup::make([
                     Action::make('confirm')
@@ -152,7 +173,10 @@ class ConfirmAppointmentArrival extends Page implements HasSchemas
                         ->color('danger')
                         ->label('I reject arrival')
                         ->icon(PhosphorIcons::CheckCircleBold)
-                ])->buttonGroup(),
+                ])
+                    ->visible(function () {
+                        return !$this->appointment->confirmed_at;
+                    })->buttonGroup(),
             ]);
     }
 
@@ -161,7 +185,6 @@ class ConfirmAppointmentArrival extends Page implements HasSchemas
         return Reservation::whereUuid(request('uuid'))
             ->canceled(false)
             ->ordered()
-            ->confirmed(false)
             ->first();
     }
 }

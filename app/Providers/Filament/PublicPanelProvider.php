@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\IdentifyTenant;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -36,6 +37,11 @@ class PublicPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Public/Resources'), for: 'App\Filament\Public\Resources')
             ->discoverPages(in: app_path('Filament/Public/Pages'), for: 'App\Filament\Public\Pages')
             ->discoverWidgets(in: app_path('Filament/Public/Widgets'), for: 'App\Filament\Public\Widgets')
+            ->plugins([
+                EasyFooterPlugin::make()
+                    ->withGithub(showLogo: true, showUrl: true)
+                    ->withLoadTime(),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

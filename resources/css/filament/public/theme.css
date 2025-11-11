@@ -2,3 +2,6 @@
 
 @source '../../../../app/Filament/Public/**/*';
 @source '../../../../resources/views/filament/public/**/*';
+@source '../../../../vendor/codewithdennis/filament-simple-alert/resources/**/*.blade.php';
+@source inline('animate-{spin,pulse,bounce}');
+@source '../../../../vendor/devonab/filament-easy-footer/resources/views/**/*';
