@@ -12,6 +12,7 @@
         "php": "^8.2",
         "ext-openssl": "*",
         "ext-soap": "*",
+        "awcodes/filament-badgeable-column": "^3.0",
         "awcodes/filament-quick-create": "^4.0",
         "awcodes/palette": "^2.0",
         "codeat3/blade-phosphor-icons": "^2.3",

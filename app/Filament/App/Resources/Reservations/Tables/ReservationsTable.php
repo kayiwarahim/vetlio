@@ -9,6 +9,9 @@ use App\Filament\App\Actions\ClientCardAction;
 use App\Filament\App\Resources\MedicalDocuments\MedicalDocumentResource;
 use App\Filament\App\Resources\Reservations\Actions\MoveBack;
 use App\Filament\App\Resources\Reservations\Actions\MoveRight;
+use App\Models\Reservation;
+use Awcodes\BadgeableColumn\Components\Badge;
+use Awcodes\BadgeableColumn\Components\BadgeableColumn;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -33,8 +36,14 @@ class ReservationsTable
         return $table
             ->striped()
             ->columns([
-                TextColumn::make('client.full_name')
-                    ->searchable()
+                BadgeableColumn::make('client.full_name')
+                    ->description(fn($record) => $record->client->email)
+                    ->suffixBadges([
+                        Badge::make('hot')
+                            ->label('Confirmed arrival')
+                            ->color('success')
+                            ->visible(fn(Reservation $record) => $record->confirmed_at),
+                    ])->searchable()
                     ->sortable()
                     ->label('Client'),
 
