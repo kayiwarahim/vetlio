@@ -15,7 +15,7 @@ class DoctorReservations extends ListReservations
 {
     protected static string $resource = ReservationResource::class;
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 40;
 
     protected static ?string $slug = 'doctor';
 

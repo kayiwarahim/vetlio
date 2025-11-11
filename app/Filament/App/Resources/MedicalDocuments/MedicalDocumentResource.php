@@ -33,6 +33,8 @@ class MedicalDocumentResource extends Resource
 
     protected static ?string $navigationLabel = 'Medical documentation';
 
+    protected static ?int $navigationSort = 50;
+
     protected static ?string $label = 'document';
 
     protected static ?string $pluralLabel = 'documents';

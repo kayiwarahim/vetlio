@@ -38,6 +38,8 @@ class PatientResource extends Resource
 
     protected static ?string $pluralLabel = 'patients';
 
+    protected static ?int $navigationSort = 20;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'breed.name', 'species.name'];

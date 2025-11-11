@@ -30,6 +30,8 @@ class ReservationResource extends Resource
 
     protected static ?string $pluralLabel = 'reservations';
 
+    protected static ?int $navigationSort = 30;
+
     public static function form(Schema $schema): Schema
     {
         return ReservationForm::configure($schema);

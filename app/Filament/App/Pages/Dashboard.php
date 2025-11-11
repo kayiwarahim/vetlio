@@ -6,18 +6,15 @@ use App\Filament\App\Widgets\AppointmentsTodayWidget;
 use App\Filament\App\Widgets\RevenueChart;
 use App\Filament\App\Widgets\StatsOverview;
 use BackedEnum;
-use Filament\Pages\Concerns\HasSubNavigation;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends Page
 {
-    use HasSubNavigation;
-
     protected string $view = 'filament.app.pages.dashboard';
 
-    protected static ?int $navigationSort = -2;
+    protected static ?int $navigationSort = -1;
 
     protected static ?string $navigationLabel = 'Dashboard';
 
@@ -33,14 +30,11 @@ class Dashboard extends Page
         return [
             StatsOverview::class,
             AppointmentsTodayWidget::class,
-            //MyTasksWidget::class,
             RevenueChart::class,
-            //RecentPatientsWidget::class,
-            //NotificationsWidget::class,
         ];
     }
 
-    public function getColumns(): int | array
+    public function getColumns(): int|array
     {
         return [
             'sm' => 1,

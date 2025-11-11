@@ -42,6 +42,8 @@ class InvoiceResource extends Resource
 
     protected static ?string $pluralLabel = 'invoices';
 
+    protected static ?int $navigationSort = 70;
+
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static string|UnitEnum|null $navigationGroup = 'Finance';

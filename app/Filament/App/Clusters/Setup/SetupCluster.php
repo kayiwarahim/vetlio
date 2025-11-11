@@ -14,7 +14,7 @@ class SetupCluster extends Cluster
 
     protected static ?string $navigationLabel = 'Setup';
 
-    protected static ?int $navigationSort = 99;
+    protected static ?int $navigationSort = 90;
 
     public static function canAccess(): bool
     {

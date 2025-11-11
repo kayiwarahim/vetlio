@@ -32,6 +32,8 @@ class PaymentResource extends Resource
 
     protected static ?string $label = 'payment';
 
+    protected static ?int $navigationSort = 80;
+
     protected static ?string $pluralLabel = 'payments';
 
     protected static string | UnitEnum | null $navigationGroup = 'Finance';

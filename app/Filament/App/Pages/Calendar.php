@@ -13,6 +13,8 @@ class Calendar extends Page
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 55;
+
     protected static string | BackedEnum | null $navigationIcon = Heroicon::Calendar;
 
     protected static ?string $title = 'Calendar';

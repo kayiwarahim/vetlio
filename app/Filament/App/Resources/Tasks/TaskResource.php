@@ -28,6 +28,8 @@ class TaskResource extends Resource
 
     protected static ?string $label = 'task';
 
+    protected static ?int $navigationSort = 60;
+
     protected static ?string $pluralLabel = 'tasks';
 
     public static function form(Schema $schema): Schema
