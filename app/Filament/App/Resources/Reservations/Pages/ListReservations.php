@@ -48,6 +48,7 @@ class ListReservations extends ListRecords
                 ->badge(function () {
                     return count($this->appointmentRequests);
                 })
+                ->modalSubmitAction(false)
                 ->button()
                 ->slideOver()
                 ->record(Filament::getTenant())
