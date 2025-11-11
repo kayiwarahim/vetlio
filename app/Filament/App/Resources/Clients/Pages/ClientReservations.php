@@ -62,9 +62,7 @@ class ClientReservations extends ManageRelatedRecords
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(function ($record) {
-                        return !$record->canceled;
-                    })
+
             ])
             ->filters([]);
     }

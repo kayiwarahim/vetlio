@@ -44,6 +44,9 @@ class Invoice extends Model
         'terms_and_conditions',
         'card_id',
         'bank_account_id',
+        'total_base_price',
+        'total_tax',
+        'total',
     ];
 
     protected $casts = [
@@ -128,6 +131,11 @@ class Invoice extends Model
             'id',
             'service_id'
         );
+    }
+
+    public function priceList(): BelongsTo
+    {
+        return $this->belongsTo(PriceList::class);
     }
 
     public function tasks(): MorphMany

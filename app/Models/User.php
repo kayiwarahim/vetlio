@@ -132,10 +132,6 @@ class User extends Authenticatable implements HasTenants, HasDefaultTenant, Fila
 
     public function getTenants(Panel $panel): array|Collection
     {
-        if ($this->administrator) {
-            return Branch::all();
-        }
-
         return $this->branches;
     }
 

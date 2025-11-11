@@ -6,6 +6,7 @@ use App\Casts\MoneyCast;
 use App\Traits\Organisationable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -36,6 +37,11 @@ class InvoiceItem extends Model
         'discount' => MoneyCast::class,
         'tax' => MoneyCast::class,
     ];
+
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 
     public function priceable(): MorphTo
     {
