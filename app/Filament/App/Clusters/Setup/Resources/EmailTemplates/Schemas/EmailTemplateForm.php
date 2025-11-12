@@ -3,12 +3,10 @@
 namespace App\Filament\App\Clusters\Setup\Resources\EmailTemplates\Schemas;
 
 use App\Enums\EmailTemplateType;
-use App\Enums\Icons\BladeFlags;
 use App\Enums\Icons\CountryFlags;
 use App\Models\EmailTemplate;
 use App\Models\Language;
 use App\Services\EmailTags\MergeTagResolver;
-use App\Services\EmailTemplateMergeTags;
 use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -63,7 +61,7 @@ class EmailTemplateForm
                         ->schema([
                             TextInput::make("subject.{$locale}")
                                 ->required($locale === $defaultLocale)
-                                ->label("Naslov ({$locale})"),
+                                ->label("Subject ({$locale})"),
 
                             RichEditor::make("body.{$locale}")
                                 ->label("HTML content ({$locale})")

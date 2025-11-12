@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class EmailTemplateResource extends Resource
 {
@@ -30,6 +31,8 @@ class EmailTemplateResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $label = 'email template';
+
+    protected static string | UnitEnum | null $navigationGroup = 'Clinic';
 
     protected static ?string $pluralLabel = 'email templates';
 

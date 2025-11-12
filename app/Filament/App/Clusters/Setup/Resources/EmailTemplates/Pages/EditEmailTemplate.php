@@ -4,6 +4,7 @@ namespace App\Filament\App\Clusters\Setup\Resources\EmailTemplates\Pages;
 
 use App\Filament\App\Clusters\Setup\Resources\EmailTemplates\EmailTemplateResource;
 use App\Models\Language;
+use App\Services\EmailTags\EmailTemplateService;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,9 @@ class EditEmailTemplate extends EditRecord
                 ]
             );
         }
+
+        //Clear template cache
+        app(EmailTemplateService::class)->clearTemplateCache($this->getRecord()->branch_id, $this->getRecord()->type_id);
 
         return $record;
     }

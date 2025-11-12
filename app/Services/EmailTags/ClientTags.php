@@ -25,7 +25,7 @@ class ClientTags implements EmailTagProvider
     {
         return [
             'client.id' => $model->id,
-            'client.name' => $model->name,
+            'client.first_name' => $model->first_name,
             'client.email' => $model->email ?? '',
         ];
     }
