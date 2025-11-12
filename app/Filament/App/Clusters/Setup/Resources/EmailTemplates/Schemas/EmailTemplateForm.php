@@ -6,7 +6,7 @@ use App\Enums\EmailTemplateType;
 use App\Enums\Icons\CountryFlags;
 use App\Models\EmailTemplate;
 use App\Models\Language;
-use App\Services\EmailTags\MergeTagResolver;
+use App\Services\EmailTemplate\MergeTagResolver;
 use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;

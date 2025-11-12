@@ -4,7 +4,7 @@ namespace App\Filament\App\Clusters\Setup\Resources\EmailTemplates\Pages;
 
 use App\Filament\App\Clusters\Setup\Resources\EmailTemplates\EmailTemplateResource;
 use App\Models\Language;
-use App\Services\EmailTags\EmailTemplateService;
+use App\Services\EmailTemplate\EmailTemplateService;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;

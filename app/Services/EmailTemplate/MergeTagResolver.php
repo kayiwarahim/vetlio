@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\EmailTags;
+namespace App\Services\EmailTemplate;
 
 use App\Enums\EmailTemplateType;
 
@@ -18,12 +18,6 @@ class MergeTagResolver
         $providerClasses = EmailTemplateTypeMap::getProvidersForType($type);
         $this->providers = array_map(fn($class) => app($class), $providerClasses);
 
-        return $this;
-    }
-
-    public function forModels(array $providerClasses): static
-    {
-        $this->providers = array_map(fn($class) => app($class), $providerClasses);
         return $this;
     }
 

@@ -4,15 +4,12 @@ namespace App\Filament\App\Actions;
 
 use App\Enums\EmailTemplateType;
 use App\Enums\Icons\PhosphorIcons;
-use App\Models\Client;
-use App\Models\Organisation;
 use App\Models\Reservation;
-use App\Services\EmailTags\EmailTemplateService;
-use App\Services\EmailTags\MergeTagResolver;
+use App\Services\EmailTemplate\EmailTemplateService;
 use App\Services\ReservationService;
+use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Width;
@@ -43,31 +40,28 @@ class CancelReservationAction extends Action
                 ->required()
                 ->rows(4),
 
+            SimpleAlert::make('no-template')
+                ->color('warning')
+                ->icon(PhosphorIcons::Warning)
+                ->columnSpanFull()
+                ->border()
+                ->visible(function () {
+                    return !app(EmailTemplateService::class)->getTemplateContent(Filament::getTenant()->id, EmailTemplateType::CancelAppointment->value);
+                })->title('No email template found')
+                ->description('Please create an email template for this action'),
+
             Toggle::make('send_email')
                 ->visible(function () {
                     return !auth()->guard('portal')->check();
+                })
+                ->disabled(function () {
+                    return !app(EmailTemplateService::class)->getTemplateContent(Filament::getTenant()->id, EmailTemplateType::CancelAppointment->value);
                 })
                 ->hint('Send email to client about cancellation')
                 ->label('Send email')
 
         ]);
         $this->action(function (array $data, $record) {
-            $template = app(EmailTemplateService::class)->getTemplateContent(Filament::getTenant()->id, EmailTemplateType::CancelAppointment->value);
-
-            if ($template == null) return $data;
-
-            $resolver = (new MergeTagResolver())
-                ->forEmailTemplate(EmailTemplateType::CancelAppointment)
-                ->context([
-                    'branch' => $record->branch,
-                    'client' => $record->client,
-                    'organisation' => $record->organisation,
-                    'appointment' => $record,
-                ]);
-            $body = RichContentRenderer::make($template->content)
-                ->mergeTags($resolver->resolve());
-
-            $body = $body->toHtml();
             app(ReservationService::class)->cancel($record, $data['reason'], $data['send_email'] ?? false);
         });
     }

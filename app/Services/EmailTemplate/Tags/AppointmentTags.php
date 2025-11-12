@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Services\EmailTags;
+namespace App\Services\EmailTemplate\Tags;
 
 use App\Contracts\EmailTagProvider;
-use App\Models\Client;
 use App\Models\Reservation;
 
 class AppointmentTags implements EmailTagProvider

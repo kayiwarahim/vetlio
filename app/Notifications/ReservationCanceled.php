@@ -2,12 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Enums\EmailTemplateType;
 use App\Enums\Icons\PhosphorIcons;
-use App\Filament\App\Resources\Tickets\TicketResource;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Services\EmailTemplate\EmailTemplateRenderer;
 use Filament\Notifications\Notification as FilamentNotification;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -18,12 +18,16 @@ class ReservationCanceled extends Notification
 
     private Reservation $reservation;
 
+    private ?array $templateContent = null;
+
     /**
      * Create a new notification instance.
      */
     public function __construct(Reservation $reservation)
     {
         $this->reservation = $reservation;
+
+        $this->templateContent = $this->getEmailTemplateContent();
     }
 
     /**
@@ -33,18 +37,23 @@ class ReservationCanceled extends Notification
      */
     public function via(object $notifiable): array
     {
+        if ($notifiable instanceof User) return ['database'];
+
+        if (!$notifiable->email) return ['database'];
+
         return ['mail', 'database'];
     }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(object $notifiable): ?MailMessage
     {
         return (new MailMessage)
-            ->greeting("Hi {$notifiable->full_name},")
-            ->line("Your reservation scheduled at {$this->reservation->from->format('H:i')} has been canceled.")
-            ->lineIf($this->reservation->cancel_reason, "Reason: {$this->reservation->cancel_reason}");
+            ->subject($this->templateContent['subject'])
+            ->markdown('emails.generic', [
+                'body' => $this->templateContent['body'],
+            ]);
     }
 
     /**
@@ -57,15 +66,25 @@ class ReservationCanceled extends Notification
         if (!$notifiable instanceof User) return [];
 
         return FilamentNotification::make()
-            ->title('Reservation has been canceled')
+            ->title($this->templateContent['subject'])
             ->icon(PhosphorIcons::CalendarX)
-            ->body(function () {
-                $scheduleAt = $this->reservation->from->format('H:i');
-                $reason = $this->reservation->cancel_reason;
-                $client = $this->reservation->client->full_name;
-
-                return "Reservation scheduled at {$scheduleAt} for {$client} has been canceled. Reason: {$reason}.";
-            })
+            ->body($this->templateContent['body'])
             ->getDatabaseMessage();
+    }
+
+    private function getEmailTemplateContent(): ?array
+    {
+        $branch = $this->reservation->branch;
+
+        return EmailTemplateRenderer::make()
+            ->for(EmailTemplateType::CancelAppointment)
+            ->withContext([
+                'branch' => $branch,
+                'client' => $this->reservation->client,
+                'organisation' => $this->reservation->organisation,
+                'appointment' => $this->reservation,
+            ])
+            ->forBranch($branch->id)
+            ->resolve();
     }
 }

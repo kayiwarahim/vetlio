@@ -165,7 +165,7 @@ class ListReservations extends ListRecords
         $from = $this->getTable()->getFilter('date')?->getState()['from'] ?? null;
         $to = $this->getTable()->getFilter('date')?->getState()['to'] ?? null;
 
-        $baseQuery = $this->getModel()::query()
+        $baseQuery = $this->getModel()::query()->canceled(false)
             ->when($from, fn($q) => $q->whereDate('date', '>=', $from))
             ->when($to, fn($q) => $q->whereDate('date', '<=', $to))
             ->when($room, fn($q) => $q->where('room_id', $room))
@@ -187,6 +187,7 @@ class ListReservations extends ListRecords
                 ->badge($counts[$status->value] ?? 0)
                 ->modifyQueryUsing(function (Builder $query) use ($status, $serviceProvider, $room, $from, $to) {
                     return $query
+                        ->canceled(false)
                         ->where('status_id', $status->value)
                         ->when($from, fn($q) => $q->whereDate('date', '>=', $from))
                         ->when($to, fn($q) => $q->whereDate('date', '<=', $to))
@@ -200,7 +201,7 @@ class ListReservations extends ListRecords
             ->badgeColor('danger')
             ->modifyQueryUsing(function (Builder $query) use ($room, $serviceProvider, $from, $to) {
                 return $query
-                    ->whereNotNull('canceled_at')
+                    ->canceled()
                     ->when($from, fn($q) => $q->whereDate('date', '>=', $from))
                     ->when($to, fn($q) => $q->whereDate('date', '<=', $to))
                     ->when($room, fn($q) => $q->where('room_id', $room))

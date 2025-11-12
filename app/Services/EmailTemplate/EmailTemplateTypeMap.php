@@ -1,8 +1,12 @@
 <?php
 
-namespace App\Services\EmailTags;
+namespace App\Services\EmailTemplate;
 
 use App\Enums\EmailTemplateType;
+use App\Services\EmailTemplate\Tags\AppointmentTags;
+use App\Services\EmailTemplate\Tags\BranchTags;
+use App\Services\EmailTemplate\Tags\ClientTags;
+use App\Services\EmailTemplate\Tags\OrganisationTags;
 
 class EmailTemplateTypeMap
 {
