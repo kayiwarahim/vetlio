@@ -10,6 +10,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class PatientInfolist
@@ -61,7 +62,8 @@ class PatientInfolist
                             : null;
                     }),
 
-                Grid::make(4)
+                Section::make()
+                    ->columns(4)
                     ->columnSpanFull()
                     ->schema([
                         ImageEntry::make('photo')

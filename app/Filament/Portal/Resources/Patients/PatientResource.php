@@ -4,12 +4,14 @@ namespace App\Filament\Portal\Resources\Patients;
 
 use App\Enums\Icons\PhosphorIcons;
 use App\Filament\Portal\Resources\Patients\Pages\ListPatients;
+use App\Filament\Portal\Resources\Patients\Pages\PatientAppointments;
 use App\Filament\Portal\Resources\Patients\Pages\ViewPatient;
 use App\Filament\Portal\Resources\Patients\Schemas\PatientForm;
 use App\Filament\Portal\Resources\Patients\Schemas\PatientInfolist;
 use App\Filament\Portal\Resources\Patients\Tables\PatientsTable;
 use App\Models\Patient;
 use BackedEnum;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -27,6 +29,14 @@ class PatientResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $breadcrumb = null;
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewPatient::class,
+            PatientAppointments::class,
+        ]);
+    }
 
     public static function getModelLabel(): string
     {
@@ -72,6 +82,7 @@ class PatientResource extends Resource
             //'create' => CreatePatient::route('/create'),
             'view' => ViewPatient::route('/{record}'),
             //'edit' => EditPatient::route('/{record}/edit'),
+            'appointments' => PatientAppointments::route('/{record}/appointments'),
         ];
     }
 
