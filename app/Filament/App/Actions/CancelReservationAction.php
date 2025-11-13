@@ -57,7 +57,7 @@ class CancelReservationAction extends Action
                     return !auth()->guard('portal')->check();
                 })
                 ->disabled(function ($record) {
-                    return !$this->hasEmailTemplate && $record->client->email == null;
+                    return !$this->hasEmailTemplate || $record->client->email == null;
                 })
                 ->hint('Send email to client about cancellation')
                 ->label('Send email')

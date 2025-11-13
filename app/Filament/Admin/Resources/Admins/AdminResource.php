@@ -75,16 +75,18 @@ class AdminResource extends Resource
                 TextColumn::make('full_name')
                     ->label('Full Name')
                     ->copyable()
-                    ->searchable(),
+                    ->sortable()
+                    ->searchable(['first_name', 'last_name']),
 
                 TextColumn::make('email')
                     ->label('Email address')
                     ->copyable()
+                    ->sortable()
                     ->searchable(),
 
                 ToggleColumn::make('active')
                     ->disabled(function (Admin $record) {
-                        return $record->id = auth()->id();
+                        return $record->id == auth()->id();
                     })
                     ->label('Active'),
 
