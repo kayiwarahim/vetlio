@@ -75,6 +75,8 @@ class CancelReservationAction extends Action
 
     private function checkEmailTemplateExists()
     {
+        if(auth()->guard('portal')->check()) return false;
+
         return app(EmailTemplateService::class)->getTemplateContent(Filament::getTenant()->id, EmailTemplateType::CancelAppointment->value) != null;
     }
 }

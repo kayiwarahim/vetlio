@@ -32,12 +32,18 @@ class Invoices extends Page implements HasTable
             Action::make('calendar')
                 ->label('Calendar')
                 ->link()
+                ->action(function() {
+                    dd("Not implemented yet");
+                })
                 ->color('neutral')
                 ->icon(PhosphorIcons::Calendar),
 
             Action::make('documents')
                 ->label('Documents')
                 ->link()
+                ->action(function() {
+                    dd("Not implemented yet");
+                })
                 ->color('neutral')
                 ->icon(PhosphorIcons::Paperclip)
         ];
@@ -110,8 +116,6 @@ class Invoices extends Page implements HasTable
                 CreatedAtColumn::make('created_at'),
             ])
             ->recordActions([
-                ViewAction::make()
-                    ->label('View'),
                 Action::make('download')
                     ->url(fn(Invoice $record) => route('print.invoices.download', ['record' => $record]))
                     ->icon(PhosphorIcons::Download),
