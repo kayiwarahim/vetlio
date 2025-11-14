@@ -48,7 +48,7 @@ class InvoicesTable
 
                 TextColumn::make('client.full_name')
                     ->sortable()
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name'])
                     ->label('Client')
                     ->icon(PhosphorIcons::User),
 
@@ -63,7 +63,7 @@ class InvoicesTable
 
                 TextColumn::make('user.full_name')
                     ->sortable()
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name'])
                     ->label('Created by'),
 
                 TextColumn::make('total_base_price')

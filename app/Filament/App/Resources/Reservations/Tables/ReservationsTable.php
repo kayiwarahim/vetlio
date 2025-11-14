@@ -50,7 +50,7 @@ class ReservationsTable
                             ->label('Confirmed arrival')
                             ->color('success')
                             ->visible(fn(Reservation $record) => $record->confirmed_at),
-                    ])->searchable()
+                    ])->searchable(['first_name', 'last_name'])
                     ->sortable()
                     ->label('Client'),
 
@@ -85,7 +85,7 @@ class ReservationsTable
                     ->label('Service'),
 
                 TextColumn::make('serviceProvider.full_name')
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name'])
                     ->label('Doctor'),
 
                 TextColumn::make('room.name')

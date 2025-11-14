@@ -73,7 +73,7 @@ class ClientItemsToPay extends ManageRelatedRecords
                 TextColumn::make('serviceProvider.full_name')
                     ->label('Doctor')
                     ->sortable()
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name'])
                     ->icon(PhosphorIcons::User),
 
                 TextColumn::make('quantity')

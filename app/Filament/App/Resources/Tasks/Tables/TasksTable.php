@@ -36,7 +36,7 @@ class TasksTable
 
                 TextColumn::make('user.full_name')
                     ->label('Created By')
-                    ->searchable(),
+                    ->searchable(['first_name', 'last_name']),
 
                 TextColumn::make('related.name')
                     ->hidden()
@@ -51,6 +51,7 @@ class TasksTable
 
                 TextColumn::make('assignedUsers.full_name')
                     ->limitList()
+                    ->searchable(['first_name', 'last_name'])
                     ->label('Assigned To'),
 
                 TextColumn::make('start_at')

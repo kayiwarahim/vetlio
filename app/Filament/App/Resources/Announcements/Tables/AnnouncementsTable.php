@@ -29,7 +29,7 @@ class AnnouncementsTable
 
                 TextColumn::make('user.full_name')
                     ->label('Created by')
-                    ->searchable(),
+                    ->searchable(['first_name', 'last_name']),
 
                 IconColumn::make('for_users')
                     ->label('For users')

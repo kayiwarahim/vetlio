@@ -43,16 +43,16 @@ class MedicalDocumentsTable
                 TextColumn::make('client.full_name')
                     ->label('Client')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(['first_name', 'last_name',]),
 
                 TextColumn::make('reason_for_coming')
                     ->label('Reason for visit')
                     ->searchable(),
 
-                TextColumn::make('serviceProvider.name')
+                TextColumn::make('serviceProvider.full_name')
                     ->label('Doctor')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(['first_name', 'last_name']),
 
                 TextColumn::make('items_sum_total')
                     ->money('EUR', 100)

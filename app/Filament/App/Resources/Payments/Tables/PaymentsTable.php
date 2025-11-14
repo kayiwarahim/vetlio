@@ -31,6 +31,7 @@ class PaymentsTable
 
                 TextColumn::make('user.full_name')
                     ->label('Created by')
+                    ->searchable(['first_name', 'last_name'])
                     ->sortable(),
 
                 TextColumn::make('payment_method_id')
@@ -38,7 +39,7 @@ class PaymentsTable
                     ->sortable(),
 
                 TextColumn::make('client.full_name')
-                    ->searchable()
+                    ->searchable(['first_name', 'last_name',])
                     ->label('Client'),
 
                 TextColumn::make('payment_at')
