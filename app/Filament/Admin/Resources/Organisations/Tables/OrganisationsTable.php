@@ -53,7 +53,7 @@ class OrganisationsTable
 
                 TextColumn::make('full_address')
                     ->label('Address')
-                    ->searchable(),
+                    ->searchable(['address', 'city', 'zip_code']),
 
                 TextColumn::make('users_count')
                     ->alignEnd()
