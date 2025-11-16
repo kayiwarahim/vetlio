@@ -92,7 +92,6 @@ class ReservationsTable
                 TextColumn::make('room.name')
                     ->label('Room'),
             ])
-            ->persistFiltersInSession()
             ->deferFilters(false)
             ->filtersFormColumns(3)
             ->filters(self::getFilters(), layout: FiltersLayout::AboveContentCollapsible)
@@ -115,9 +114,11 @@ class ReservationsTable
                 ->schema([
                     DatePicker::make('from')
                         ->label('From')
+                        ->live(false, 500)
                         ->default(now()->startOfDay()),
 
                     DatePicker::make('to')
+                        ->live(false, 500)
                         ->label('To')
                         ->default(now()->endOfDay()),
                 ])

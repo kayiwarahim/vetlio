@@ -163,9 +163,10 @@ class ListReservations extends ListRecords
     {
         $room = $this->getTable()->getFilter('room_id')?->getState()['value'] ?? null;
         $serviceProvider = $this->getTable()->getFilter('service_provider_id')?->getState()['value'] ?? null;
-        $from = $this->getTable()->getFilter('date')?->getState()['from'] ?? null;
-        $to = $this->getTable()->getFilter('date')?->getState()['to'] ?? null;
+        $from = $this->getTable()->getFilter('date')?->getState()['from'] ?? now()->startOfDay();
+        $to = $this->getTable()->getFilter('date')?->getState()['to'] ?? now()->endOfDay();
 
+        //dd($this->getTable());
         $baseQuery = $this->getModel()::query()
             ->when($from, fn($q) => $q->whereDate('date', '>=', $from))
             ->when($to, fn($q) => $q->whereDate('date', '<=', $to))
