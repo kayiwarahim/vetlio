@@ -6,9 +6,10 @@ use App\Enums\Icons\PhosphorIcons;
 use App\Filament\App\Actions\CancelReservationAction;
 use App\Filament\App\Actions\ClientCardAction;
 use App\Filament\App\Resources\MedicalDocuments\MedicalDocumentResource;
+use App\Filament\App\Resources\Reservations\Actions\EditAppointmentAction;
 use App\Filament\App\Resources\Reservations\Actions\MoveBack;
 use App\Filament\App\Resources\Reservations\Actions\MoveRight;
-use App\Filament\App\Resources\Reservations\Pages\ListReservations;
+use App\Filament\App\Resources\Reservations\Actions\ViewAppointmentAction;
 use App\Models\Reservation;
 use Awcodes\BadgeableColumn\Components\Badge;
 use Awcodes\BadgeableColumn\Components\BadgeableColumn;
@@ -17,10 +18,8 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -160,12 +159,11 @@ class ReservationsTable
                 ->visible(fn($record) => $record->status_id->isInProcess())
                 ->url(fn($record) => MedicalDocumentResource::getUrl('create', ['reservationId' => $record->uuid])),
 
-            ViewAction::make(),
+            ViewAppointmentAction::make(),
 
             ActionGroup::make([
                 ClientCardAction::make(),
-                EditAction::make()
-                    ->visible(fn($record) => !$record->canceled_at && $record->status_id->isOrdered()),
+                EditAppointmentAction::make(),
                 DeleteAction::make(),
                 CancelReservationAction::make(),
             ]),

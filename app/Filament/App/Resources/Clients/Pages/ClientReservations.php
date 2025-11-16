@@ -4,12 +4,12 @@ namespace App\Filament\App\Resources\Clients\Pages;
 
 use App\Enums\Icons\PhosphorIcons;
 use App\Filament\App\Resources\Clients\ClientResource;
+use App\Filament\App\Resources\Reservations\Actions\EditAppointmentAction;
 use App\Filament\App\Resources\Reservations\Schemas\ReservationForm;
 use App\Filament\App\Resources\Reservations\Schemas\ReservationInfolist;
 use App\Filament\App\Resources\Reservations\Tables\ReservationsTable;
 use BackedEnum;
 use Filament\Actions\CreateAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -61,8 +61,7 @@ class ClientReservations extends ManageRelatedRecords
         return ReservationsTable::configure($table)
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make()
-
+                EditAppointmentAction::make()
             ])
             ->filters([]);
     }

@@ -6,18 +6,17 @@ use App\Enums\Icons\PhosphorIcons;
 use App\Enums\ReservationStatus;
 use App\Filament\App\Pages\AppointmentRequests;
 use App\Filament\App\Resources\MedicalDocuments\MedicalDocumentResource;
+use App\Filament\App\Resources\Reservations\Actions\NewAppointmentAction;
 use App\Filament\App\Resources\Reservations\ReservationResource;
 use App\Services\ReservationService;
 use CodeWithDennis\SimpleAlert\Components\SimpleAlert;
 use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Support\Enums\Width;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,10 +30,11 @@ class ListReservations extends ListRecords
 
     public ?Collection $appointmentRequests = null;
 
-    public  function getTitle(): string|Htmlable
+    public function getTitle(): string|Htmlable
     {
-     return 'Waiting room';
+        return 'Waiting room';
     }
+
     public function mount(): void
     {
         parent::mount();
@@ -146,11 +146,7 @@ class ListReservations extends ListRecords
                 ->outlined()
                 ->url(fn() => MedicalDocumentResource::getUrl('create')),
 
-            CreateAction::make()
-                ->color('success')
-                ->modalWidth(Width::SixExtraLarge)
-                ->label('New Reservation')
-                ->icon(PhosphorIcons::CalendarPlus),
+            NewAppointmentAction::make(),
         ];
     }
 
