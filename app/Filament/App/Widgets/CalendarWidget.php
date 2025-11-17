@@ -5,6 +5,7 @@ namespace App\Filament\App\Widgets;
 use App\Enums\CalendarEventsType;
 use App\Filament\App\Actions\CancelReservationAction;
 use App\Filament\App\Resources\Reservations\Schemas\ReservationForm;
+use App\Filament\App\Resources\Reservations\Schemas\ReservationInfolist;
 use App\Models\Client;
 use App\Models\Reservation;
 use App\Models\User;
@@ -258,6 +259,9 @@ class CalendarWidget extends BaseCalendarWidget
     public function viewAction(): ViewAction
     {
         return ViewAction::make($this->view)
+            ->schema(function ($schema) {
+                return ReservationInfolist::configure($schema);
+            })
             ->label('Open');
     }
 
