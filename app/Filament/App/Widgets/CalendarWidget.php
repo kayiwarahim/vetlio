@@ -259,8 +259,12 @@ class CalendarWidget extends BaseCalendarWidget
     public function viewAction(): ViewAction
     {
         return ViewAction::make($this->view)
-            ->schema(function ($schema) {
-                return ReservationInfolist::configure($schema);
+            ->record(function ($livewire) {
+                return $livewire->getEventRecord();
+            })
+            ->schema(function ($schema, $record) {
+                return ReservationInfolist::configure($schema)
+                    ->record($record);
             })
             ->label('Open');
     }
