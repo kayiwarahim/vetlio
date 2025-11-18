@@ -35,7 +35,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Spatie\Period\Period;
-use Spatie\Period\PeriodCollection;
 use Spatie\Period\Precision;
 
 class CalendarWidget extends BaseCalendarWidget
@@ -62,13 +61,17 @@ class CalendarWidget extends BaseCalendarWidget
 
     protected bool $dayMaxEvents = false;
 
-    public ?Collection $selectedUsers;
-
-    public ?int $selectedClient = null;
-
-    public ?int $calendarEventsType = 1;
-
     protected bool $useFilamentTimezone = true;
+
+    //Resources for header
+    public ?Collection $selectedResources = null;
+
+    public function mount(): void
+    {
+        $this->selectedResources = User::whereHas('branches', function ($query) {
+            return $query->where('branch_id', Filament::getTenant()->id);
+        })->get();
+    }
 
     public function getHeaderActions(): array
     {
@@ -80,9 +83,7 @@ class CalendarWidget extends BaseCalendarWidget
                 ->icon(Heroicon::Cog)
                 ->label('Filter')
                 ->fillForm(function ($data) {
-                    $data['users'] = $this->selectedUsers;
-                    $data['clients'] = $this->selectedClient;
-                    $data['type'] = $this->calendarEventsType;
+                    $data['users'] = $this->selectedResources;
 
                     return $data;
                 })
@@ -107,10 +108,8 @@ class CalendarWidget extends BaseCalendarWidget
                 ])
                 ->action(function (array $data) {
                     if (Arr::get($data, 'users')) {
-                        $this->selectedUsers = collect($data['users']);
+                        $this->selectedResources = collect($data['users']);
                     }
-                    $this->calendarEventsType = $data['type']->value;
-                    $this->selectedClient = $data['clients'];
 
                     $this->refreshResources();
                     $this->refreshRecords();
@@ -118,23 +117,18 @@ class CalendarWidget extends BaseCalendarWidget
         ];
     }
 
-    public function mount(): void
-    {
-        $this->calendarEventsType = 1;
-        $this->selectedClient = null;
-        $this->selectedUsers = User::all()->pluck('id');
-    }
 
     protected function onDatesSet(DatesSetInfo $info): void
     {
         $workingTimes = $this->getEarliestWorkingStartForDate($info->start);
+
         $this->setOption('slotMinTime', $workingTimes['min']);
         $this->setOption('slotMaxTime', $workingTimes['max']);
     }
 
     protected function getEarliestWorkingStartForDate(CarbonInterface|string $date): array
     {
-        if (! $date instanceof CarbonInterface) {
+        if (!$date instanceof CarbonInterface) {
             $date = Carbon::parse($date);
         }
 
@@ -146,7 +140,7 @@ class CalendarWidget extends BaseCalendarWidget
         $isWorking = $schedule[$flagKey] ?? false;
         $intervals = $schedule[$dayName] ?? [];
 
-        if (! $isWorking || empty($intervals)) {
+        if (!$isWorking || empty($intervals)) {
             return [
                 'min' => '06:00',
                 'max' => '22:00',
@@ -186,7 +180,6 @@ class CalendarWidget extends BaseCalendarWidget
         return Reservation::query()
             ->canceled(false)
             ->with(['client', 'serviceProvider', 'service'])
-            ->when($this->selectedClient, fn($q) => $q->where('client_id', $this->selectedClient))
             ->whereDate('to', '>=', $info->start)
             ->whereDate('from', '<=', $info->end);
     }
@@ -204,7 +197,7 @@ class CalendarWidget extends BaseCalendarWidget
             );
         });
 
-        $resourceIds = $this->getResources()->get()->pluck('id');
+        $resourceIds = collect($this->getResourcesJs())->pluck('id')->all();
 
         return $holidays->map(function ($h) use ($resourceIds) {
             $start = $h->date instanceof Carbon ? $h->date : Carbon::parse($h->date);
@@ -215,7 +208,7 @@ class CalendarWidget extends BaseCalendarWidget
                 ->start($start->toDateString())
                 ->end($start->toDateString())
                 ->allDay()
-                ->resourceIds(array_unique($resourceIds->toArray()))
+                ->resourceIds($resourceIds)
                 ->editable(false)
                 ->backgroundColor('#e91e63');
         });
@@ -342,11 +335,7 @@ class CalendarWidget extends BaseCalendarWidget
 
     protected function getResources(): Collection|array|Builder
     {
-        if ($this->selectedUsers) {
-            return User::query()->whereIn('id', $this->selectedUsers);
-        }
-
-        return User::query();
+        return $this->selectedResources;
     }
 
     protected function nonWorkingPeriods(FetchInfo $fetchInfo): Collection
@@ -354,9 +343,8 @@ class CalendarWidget extends BaseCalendarWidget
         $events = [];
         $schedule = Filament::getTenant()->work_schedule ?? [];
 
-        // Guava daje CarbonImmutable start/end
         $start = $fetchInfo->start->copy()->startOfDay();
-        $end   = $fetchInfo->end->copy()->subSecond()->startOfDay();
+        $end = $fetchInfo->end->copy()->subSecond()->startOfDay();
 
         $currentDate = $start->copy();
 
@@ -368,7 +356,7 @@ class CalendarWidget extends BaseCalendarWidget
             $isWorking = $schedule[$flagKey] ?? false;
             $intervals = $schedule[$dayName] ?? [];
 
-            if (! $isWorking || empty($intervals)) {
+            if (!$isWorking || empty($intervals)) {
                 $full = Period::make(
                     $currentDate->startOfDay(),
                     $currentDate->endOfDay(),
@@ -376,8 +364,8 @@ class CalendarWidget extends BaseCalendarWidget
                 );
 
                 $events[] = [
-                    'start'      => CarbonImmutable::instance($full->start()),
-                    'end'        => CarbonImmutable::instance($full->end()),
+                    'start' => CarbonImmutable::instance($full->start()),
+                    'end' => CarbonImmutable::instance($full->end()),
                     'classNames' => ['non-working'],
                 ];
 
@@ -392,8 +380,8 @@ class CalendarWidget extends BaseCalendarWidget
             );
 
             $workingPeriods = collect($intervals)
-                ->filter(fn ($i) => ! empty($i['from']) && ! empty($i['to'] ))
-                ->map(function($i) use ($currentDate){
+                ->filter(fn($i) => !empty($i['from']) && !empty($i['to']))
+                ->map(function ($i) use ($currentDate) {
                     return Period::make(
                         $currentDate->setTimeFromTimeString($i['from']),
                         $currentDate->setTimeFromTimeString($i['to']),
@@ -411,8 +399,8 @@ class CalendarWidget extends BaseCalendarWidget
                 );
 
                 $events[] = [
-                    'start'      => CarbonImmutable::instance($full->start()),
-                    'end'        => CarbonImmutable::instance($full->end()),
+                    'start' => CarbonImmutable::instance($full->start()),
+                    'end' => CarbonImmutable::instance($full->end()),
                     'classNames' => ['non-working'],
                 ];
 
@@ -425,8 +413,8 @@ class CalendarWidget extends BaseCalendarWidget
             foreach ($nonWorking as $period) {
                 //dump($period->start(), $period->end());
                 $events[] = [
-                    'start'      => CarbonImmutable::instance($period->start()),
-                    'end'        => CarbonImmutable::instance($period->end()),
+                    'start' => CarbonImmutable::instance($period->start()),
+                    'end' => CarbonImmutable::instance($period->end()),
                     'classNames' => ['non-working'],
                 ];
             }
@@ -434,23 +422,20 @@ class CalendarWidget extends BaseCalendarWidget
             $currentDate = $currentDate->addDay();
         }
 
+        $resourceIds = collect($this->getResourcesJs())->pluck('id')->all();
+
         // Map u Guava CalendarEvent
-        return collect($events)->map(function ($event) {
+        return collect($events)->map(function ($event) use ($resourceIds) {
             return CalendarEvent::make()
                 ->key(Str::uuid())
                 ->title('NON WORKING')
                 ->start($event['start'])
                 ->end($event['end'])
-                //->backgroundColor('red')
                 ->displayBackground()
                 ->classes([
                     "bg-[repeating-linear-gradient(45deg,theme(colors.gray.400)_0,theme(colors.gray.400)_1px,transparent_1px,transparent_3px)]"
                 ])
-                ->resourceIds(
-                    array_values(
-                        $this->getResources()->get()->pluck('id')->toArray()
-                    )
-                );
+                ->resourceIds($resourceIds);
         });
     }
 
@@ -477,7 +462,7 @@ class CalendarWidget extends BaseCalendarWidget
         $from = Carbon::parse($info->start)->startOfDay();
         $to = Carbon::parse($info->end)->endOfDay();
 
-        $resourceIds = $this->getResources()->get()->pluck('id');
+        $resourceIds = collect($this->getResourcesJs())->pluck('id')->all();
 
         $cursor = $from->copy();
         while ($cursor->lte($to)) {
@@ -490,7 +475,7 @@ class CalendarWidget extends BaseCalendarWidget
                         ->title($dayOfWeek === 6 ? 'Saturday' : 'Sunday')
                         ->start($cursor->toDateString())
                         ->end($cursor->toDateString())
-                        ->resourceIds(array_values($resourceIds->toArray()))
+                        ->resourceIds($resourceIds)
                         ->allDay()
                         ->displayBackground()
                         ->backgroundColor($dayOfWeek === 6 ? '#FFF9C4' : '#FFCDD2')

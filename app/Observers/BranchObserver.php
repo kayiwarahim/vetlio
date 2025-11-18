@@ -48,7 +48,7 @@ class BranchObserver
             }
 
             $builder = Zap::for($model)
-                ->named("Working hours {$day} {$year}")
+                ->named("Branch schedule for: {$day} {$year}")
                 ->availability()
                 ->forYear($year)
                 ->withMetadata([

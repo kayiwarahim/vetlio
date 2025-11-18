@@ -33,10 +33,10 @@ class ReservationForm
                 SimpleAlert::make('no-availability')
                     ->warning()
                     ->border()
-                    ->hidden(fn($get) => !$get('availability_conflicts'))
+                    ->visible(fn($get) => $get('availability_conflicts'))
                     ->columnSpanFull()
                     ->title('Warning!')
-                    ->description('The selected time is not available for the selected veterinarian and room.'),
+                    ->description(fn($get) => $get('availability_conflicts')),
 
                 Select::make('client_id')
                     ->label('Client')
@@ -259,7 +259,7 @@ class ReservationForm
             ]);
     }
 
-    public static function checkAvailability($get, $set)
+    public static function checkAvailability($get, $set): void
     {
         $start = $get('from');
         $end = $get('to');
@@ -275,7 +275,7 @@ class ReservationForm
 
             $branch = Filament::getTenant();
 
-            if (!$branch->getBookableSlots($date)) {
+            if (empty($branch->getBookableSlots($date))) {
                 $conflicts[] = 'No schedule is set for this branch.';
             }
 
@@ -293,7 +293,7 @@ class ReservationForm
                 $conflicts[] = 'The room is occupied during the selected time.';
             }
         }
-
+ds($conflicts);
         $set('availability_conflicts', implode(PHP_EOL, $conflicts));
     }
 

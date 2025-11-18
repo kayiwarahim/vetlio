@@ -218,9 +218,9 @@ class Reservation extends Model implements Eventable
             ->extendedProps([
                 'start' => $this->from->format('H:i'),
                 'end' => $this->to->format('H:i'),
-                'client' => $this->client->full_name,
-                'service' => $this->service->name,
-                'location' => $this->branch->name
+               // 'client' => $this->client->full_name,
+                //'service' => $this->service->name,
+               // 'location' => $this->branch->name
             ])
             ->resourceId($this->serviceProvider->id)
             ->startEditable()

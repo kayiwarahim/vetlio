@@ -12,7 +12,7 @@ return [
     */
     'default_rules' => [
         'no_overlap' => [
-            'enabled' => true,
+            'enabled' => false,
             'applies_to' => [
                 // Which schedule types get this rule automatically
                 \Zap\Enums\ScheduleTypes::APPOINTMENT,
