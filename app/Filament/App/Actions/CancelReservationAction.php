@@ -65,7 +65,10 @@ class CancelReservationAction extends Action
         ]);
         $this->action(function (array $data, $record) {
             app(ReservationService::class)->cancel($record, $data['cancel_reason_id'], $data['send_email'] ?? false);
-        });
+        })
+            ->after(function ($livewire) {
+                $livewire->dispatch('appointment-canceled');
+            });
     }
 
     public static function getDefaultName(): ?string

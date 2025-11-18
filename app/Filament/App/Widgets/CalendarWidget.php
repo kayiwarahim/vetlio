@@ -20,6 +20,7 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Guava\Calendar\Attributes\CalendarEventContent;
 use Guava\Calendar\Concerns\CalendarAction;
 use Guava\Calendar\Enums\CalendarViewType;
 use Guava\Calendar\Filament\Actions\CreateAction;
@@ -39,6 +40,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Spatie\Period\Period;
 use Spatie\Period\Precision;
 
@@ -195,13 +197,15 @@ class CalendarWidget extends BaseCalendarWidget
                 ->key($appointment)
                 ->title($appointment->client->full_name)
                 ->extendedProps([
+                    'type' => 'appointment',
                     'model' => Reservation::class,
                     'key' => $appointment->getKey(),
                     'start' => $appointment->from->format('H:i'),
                     'end' => $appointment->to->format('H:i'),
                     'client' => $appointment->client->full_name,
+                    'patient' => $appointment->patient->name,
                     'service' => $appointment->service->name,
-                    'location' => $appointment->branch->name
+                    'color' => $appointment->service->color ?? '#8bc34a'
                 ])
                 ->resourceId($appointment->serviceProvider->id)
                 ->startEditable()
@@ -239,6 +243,9 @@ class CalendarWidget extends BaseCalendarWidget
                 ->start($start->toDateString())
                 ->end($start->toDateString())
                 ->allDay()
+                ->extendedProps([
+                    'type' => 'holiday',
+                ])
                 ->resourceIds($resourceIds)
                 ->editable(false)
                 ->backgroundColor('#e91e63');
@@ -250,10 +257,11 @@ class CalendarWidget extends BaseCalendarWidget
         return view('calendar.resource');
     }
 
-    /*protected function eventContent(): HtmlString|string
+    #[CalendarEventContent(Reservation::class)]
+    protected function reservationEventContent(): HtmlString|string
     {
         return view('calendar.event');
-    }*/
+    }
 
     public function getOptions(): array
     {
@@ -321,7 +329,7 @@ class CalendarWidget extends BaseCalendarWidget
             return;
         }
 
-        //Check if working day of branch
+        //Check if working day of a branch
         if (!$this->isWorkingPeriod($info->date)) {
             $date = Carbon::parse($info->date)->format('d.m.Y H:i');
 
@@ -353,6 +361,12 @@ class CalendarWidget extends BaseCalendarWidget
             ->columns(2);
     }
 
+    #[On('appointment-canceled')]
+    public function onAppointmentCanceled(): void
+    {
+        $this->refreshRecords();
+    }
+
     public function viewAction(): ViewAction
     {
         return ViewAction::make($this->view)
@@ -364,15 +378,6 @@ class CalendarWidget extends BaseCalendarWidget
                     ->record($record);
             })
             ->label('Open');
-    }
-
-    protected function createAction(string $model, ?string $name = null): CreateAction
-    {
-        return parent::createAction($model, $name)
-            ->label('New reservation')
-            ->modalHeading('New reservation')
-            ->modalIcon(Heroicon::Calendar)
-            ->icon(Heroicon::Calendar);
     }
 
     protected function getResources(): Collection|array|Builder
@@ -453,7 +458,6 @@ class CalendarWidget extends BaseCalendarWidget
             $nonWorking = $fullDay->subtract(...$workingPeriods);
 
             foreach ($nonWorking as $period) {
-                //dump($period->start(), $period->end());
                 $events[] = [
                     'start' => CarbonImmutable::instance($period->start()),
                     'end' => CarbonImmutable::instance($period->end()),
@@ -474,6 +478,9 @@ class CalendarWidget extends BaseCalendarWidget
                 ->start($event['start'])
                 ->end($event['end'])
                 ->displayBackground()
+                ->extendedProps([
+                    'type' => 'non-working',
+                ])
                 ->classes([
                     "bg-[repeating-linear-gradient(45deg,theme(colors.gray.400)_0,theme(colors.gray.400)_1px,transparent_1px,transparent_3px)]"
                 ])
@@ -569,7 +576,7 @@ class CalendarWidget extends BaseCalendarWidget
         return false;
     }
 
-    function isTimeBetween($timeToCheck, $startTime, $endTime)
+    public function isTimeBetween($timeToCheck, $startTime, $endTime): bool
     {
         $time = Carbon::parse($timeToCheck)->format('H:i:s');
         $start = Carbon::parse($startTime)->format('H:i:s');

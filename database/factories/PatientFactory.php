@@ -75,7 +75,7 @@ class PatientFactory extends Factory
 
         return $this->state(fn () => [
             'name' => 'Bono',
-            'photo' => 'https://place-puppy.com/400x400',
+            //'photo' => 'https://place-puppy.com/400x400',
             'color' => 'brown',
             'gender_id' => 1,
             'species_id' => $species->id,
