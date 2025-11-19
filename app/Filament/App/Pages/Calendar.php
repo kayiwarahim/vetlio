@@ -2,12 +2,15 @@
 
 namespace App\Filament\App\Pages;
 
+use App\Filament\App\Resources\Reservations\Actions\AppointmentRequestsAction;
 use App\Filament\App\Resources\Reservations\Actions\NewAppointmentAction;
 use App\Filament\App\Widgets\CalendarWidget;
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 
 class Calendar extends Page
 {
@@ -23,9 +26,17 @@ class Calendar extends Page
 
     protected Width|string|null $maxContentWidth = 'full';
 
+    public ?Collection $appointmentRequests = null;
+
+    public function mount(): void
+    {
+        $this->appointmentRequests = Filament::getTenant()->appointmentRequests()->where('approval_at', null)->get();
+    }
+
     protected function getHeaderActions(): array
     {
         return [
+            AppointmentRequestsAction::make(),
             NewAppointmentAction::make(),
         ];
     }

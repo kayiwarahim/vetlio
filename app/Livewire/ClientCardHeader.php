@@ -6,6 +6,7 @@ use App\Enums\Icons\PhosphorIcons;
 use App\Models\Client;
 use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\SpatieTagsEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -34,6 +35,9 @@ class ClientCardHeader extends Component implements HasSchemas
             ->schema([
                 Grid::make(1)
                     ->gap(false)
+                    ->extraAttributes([
+                        'class' => 'gap-y-4'
+                    ])
                     ->schema([
                         ImageEntry::make('avatar_url')
                             ->hiddenLabel()
@@ -72,6 +76,13 @@ class ClientCardHeader extends Component implements HasSchemas
                             ->color('gray')
                             ->hiddenLabel()
                             ->alignCenter(),
+
+                        SpatieTagsEntry::make('tags')
+                            ->extraEntryWrapperAttributes([
+                                'class' => 'mt-2'
+                            ])
+                            ->alignCenter()
+                            ->hiddenLabel()
                     ])
             ]);
     }
