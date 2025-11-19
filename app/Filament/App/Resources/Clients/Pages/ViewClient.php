@@ -29,7 +29,13 @@ class ViewClient extends ViewRecord
     {
         return [
             NewAppointmentAction::make(),
-            NewPatientAction::make(),
+
+            NewPatientAction::make()
+                ->fillForm(function ($data) {
+                    $data['client_id'] = $this->getRecord()->id;
+                    return $data;
+                }),
+
             SendEmailAction::make(),
             EditAction::make(),
         ];
