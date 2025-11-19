@@ -10,6 +10,7 @@ use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
 
 class Calendar extends Page
@@ -27,6 +28,11 @@ class Calendar extends Page
     protected Width|string|null $maxContentWidth = 'full';
 
     public ?Collection $appointmentRequests = null;
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return Filament::getTenant()->name;
+    }
 
     public function mount(): void
     {

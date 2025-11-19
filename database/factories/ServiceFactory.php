@@ -14,12 +14,10 @@ class ServiceFactory extends Factory
 
     public function definition(): array
     {
-        // Trajanje između 15 i 90 minuta u koracima od 15
         $minutes = $this->faker->randomElement([15, 30, 45, 60, 75, 90]);
         $hours = floor($minutes / 60);
         $mins = $minutes % 60;
 
-        // format HH:MM:SS (npr. 00:15:00)
         $duration = sprintf('%02d:%02d:00', $hours, $mins);
 
         return [
@@ -34,6 +32,25 @@ class ServiceFactory extends Factory
                 'Ultrasound',
                 'X-Ray Examination',
                 'Grooming Session',
+                'Microchipping',
+                'Neutering / Spaying',
+                'Parasite Treatment',
+                'Emergency Examination',
+                'Allergy Testing',
+                'Dietary Consultation',
+                'Cardiology Exam',
+                'Orthopedic Assessment',
+                'Ophthalmology Exam',
+                'Dermatology Consultation',
+                'Endoscopy',
+                'Physiotherapy Session',
+                'Post-Operative Checkup',
+                'Puppy/Kitten Wellness Exam',
+                'Wound Care',
+                'Behavioral Consultation',
+                'Senior Pet Screening',
+                'Fecal Analysis',
+                'Urinalysis',
             ]),
             'code' => strtoupper(Str::random(5)),
             'color' => $this->faker->safeHexColor(),

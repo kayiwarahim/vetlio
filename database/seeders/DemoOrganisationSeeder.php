@@ -62,27 +62,13 @@ class DemoOrganisationSeeder extends Seeder
             ->count(4)
             ->for($organisation)
             ->make()
-            ->each(function ($user) use ($branches, $organisation) {
-                $branch = $branches->random();
-                $user->primary_branch_id = $branch->id;
+            ->each(function ($user) use ($branches, $organisation, $adminBranch) {
+                $user->primary_branch_id = $adminBranch->id;
                 $user->organisation_id = $organisation->id;
                 $user->save();
 
-                if (method_exists($user, 'branches')) {
-                    $assigned = $branches->random(rand(1, $branches->count()));
-                    $user->branches()->attach($assigned->pluck('id'));
-                }
+                $user->branches()->attach($adminBranch->pluck('id'));
             });
-
-        $users->each(function (User $user) use ($branches) {
-            $assignedBranches = $branches->random(rand(1, $branches->count()));
-            $user->update([
-                'primary_branch_id' => $assignedBranches->first()->id,
-            ]);
-            if (method_exists($user, 'branches')) {
-                $user->branches()->attach($assignedBranches->pluck('id'));
-            }
-        });
 
         // Create price lists
         $priceLists = PriceList::factory()
@@ -100,7 +86,6 @@ class DemoOrganisationSeeder extends Seeder
             }
         });
 
-
         $groups = ServiceGroup::factory()
             ->count(5)
             ->for($organisation)
@@ -115,13 +100,18 @@ class DemoOrganisationSeeder extends Seeder
                 ->create();
 
             $services = $services->merge($created);
+
+            $services->each(function (Service $service) {
+                $service->users()->attach(User::inRandomOrder()->limit(rand(1,3))->pluck('id'));
+                $service->rooms()->attach(Room::inRandomOrder()->limit(rand(1,3))->pluck('id'));
+            });
+
+
         });
 
-        // 7️⃣ Kreiraj cijene za svaku uslugu u svakom cjeniku
         $priceLists->each(function (PriceList $priceList) use ($services, $organisation) {
             $services->each(function (Service $service) use ($priceList, $organisation) {
 
-                // Svaka usluga ima 1–3 cijene (npr. povijesne, važeće, buduće)
                 $count = rand(1, 3);
                 $baseDate = now()->subMonths(rand(0, 6));
 
