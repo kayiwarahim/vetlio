@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Pages;
 
+use App\Filament\App\Resources\Reservations\Actions\NewAppointmentAction;
 use App\Filament\App\Widgets\CalendarWidget;
 use BackedEnum;
 use Filament\Pages\Page;
@@ -21,6 +22,13 @@ class Calendar extends Page
     protected static ?string $title = 'Calendar';
 
     protected Width|string|null $maxContentWidth = 'full';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            NewAppointmentAction::make(),
+        ];
+    }
 
     protected function getHeaderWidgets(): array
     {

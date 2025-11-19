@@ -73,6 +73,7 @@ class CalendarWidget extends BaseCalendarWidget
 
     //Resources for header
     public ?Collection $selectedResources = null;
+
     public ?int $resourceType = 1;
 
     public function mount(): void
@@ -82,17 +83,17 @@ class CalendarWidget extends BaseCalendarWidget
         })->get();
     }
 
-
     public function getHeaderActions(): array
     {
         return [
             Action::make('filter')
                 ->slideOver()
+                ->link()
+                ->tooltip('Filter calendar')
                 ->modalHeading('Filter')
                 ->modalDescription('Filter calendar by date, service or user')
                 ->modalIcon(PhosphorIcons::FilesThin)
                 ->hiddenLabel()
-                ->button()
                 ->icon(Heroicon::Cog)
                 ->label('Filter')
                 ->fillForm(function ($data) {
@@ -139,7 +140,9 @@ class CalendarWidget extends BaseCalendarWidget
                                 ->bulkToggleable()
                                 ->columnSpanFull()
                                 ->label('Users')
-                                ->options(User::all()->pluck('name', 'id')),
+                                ->options(User::whereHas('branches', function ($query) {
+                                    $query->where('branch_id', Filament::getTenant()->id);
+                                })->pluck('name', 'id')),
 
                             CheckboxList::make('rooms')
                                 ->visible(function ($get) {
@@ -151,7 +154,7 @@ class CalendarWidget extends BaseCalendarWidget
                                 ->bulkToggleable()
                                 ->columnSpanFull()
                                 ->label('Rooms')
-                                ->options(Room::all()->pluck('name', 'id')),
+                                ->options(Room::where('branch_id', Filament::getTenant()->id)->pluck('name', 'id')),
                         ])
                 ])
                 ->action(function (array $data) {
