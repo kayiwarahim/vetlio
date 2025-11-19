@@ -16,7 +16,7 @@ class EmailTemplateTypeMap
     public static function getProvidersForType(int $typeId): array
     {
         return match ($typeId) {
-            EmailTemplateType::CancelAppointment->value, EmailTemplateType::NewAppointment->value => [
+            EmailTemplateType::CancelAppointment->value, EmailTemplateType::RescheduleAppointment->value, EmailTemplateType::NewAppointment->value => [
                 OrganisationTags::class,
                 ClientTags::class,
                 BranchTags::class,

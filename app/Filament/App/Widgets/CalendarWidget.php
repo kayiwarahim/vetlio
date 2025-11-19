@@ -32,6 +32,7 @@ use Guava\Calendar\ValueObjects\DateClickInfo;
 use Guava\Calendar\ValueObjects\DateSelectInfo;
 use Guava\Calendar\ValueObjects\DatesSetInfo;
 use Guava\Calendar\ValueObjects\EventClickInfo;
+use Guava\Calendar\ValueObjects\EventDropInfo;
 use Guava\Calendar\ValueObjects\FetchInfo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -70,6 +71,8 @@ class CalendarWidget extends BaseCalendarWidget
     protected bool $dayMaxEvents = false;
 
     protected bool $useFilamentTimezone = true;
+
+    protected bool $eventDragEnabled = true;
 
     //Resources for header
     public ?Collection $selectedResources = null;
@@ -400,6 +403,35 @@ class CalendarWidget extends BaseCalendarWidget
         if ($event instanceof Reservation) {
             $this->mountAction('view', ['record' => $event]);
         }
+    }
+
+    public function confirmDropAction(): Action
+    {
+        return Action::make('confirmDrop')
+            ->modalDescription(function ($arguments) {
+                return "Are you sure you want to move this appointment from {$arguments['from']->format('H:i')} to {$arguments['to']->format('H:i')}?";
+            })
+            ->requiresConfirmation()
+            ->successNotificationTitle('Appointment rescheduled successfully')
+            ->action(function (array $data, $arguments) {
+                $arguments['record']->update([
+                    'from' => $arguments['from'],
+                    'to' => $arguments['to'],
+                ]);
+
+                $this->refreshRecords();
+            });
+    }
+
+    protected function onEventDrop(EventDropInfo $info, Model $event): bool
+    {
+        $this->mountAction('confirmDrop', [
+            'record' => $event,
+            'from' => $info->event->getStart(),
+            'to' => $info->event->getEnd(),
+        ]);
+
+        return true;
     }
 
     public function defaultSchema(Schema $schema): Schema

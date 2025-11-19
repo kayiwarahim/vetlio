@@ -4,12 +4,13 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum EmailTemplateType : int implements HasLabel
+enum EmailTemplateType: int implements HasLabel
 {
     case CancelAppointment = 1;
     case NewAppointment = 2;
     case SendMedicalDocument = 3;
     case SendInvoice = 4;
+    case RescheduleAppointment = 5;
 
     public function getLabel(): ?string
     {
@@ -18,6 +19,7 @@ enum EmailTemplateType : int implements HasLabel
             self::NewAppointment => 'New appointment',
             self::SendMedicalDocument => 'Send medical document',
             self::SendInvoice => 'Send invoice',
+            self::RescheduleAppointment => 'Reschedule appointment',
         };
     }
 
@@ -35,6 +37,7 @@ enum EmailTemplateType : int implements HasLabel
     {
         return match ($this) {
             self::NewAppointment,
+            self::RescheduleAppointment,
             self::CancelAppointment => ['id' => 1, 'label' => 'Appointment'],
             self::SendMedicalDocument => ['id' => 3, 'label' => 'Medical Documents'],
             self::SendInvoice => ['id' => 4, 'label' => 'Invoices'],
