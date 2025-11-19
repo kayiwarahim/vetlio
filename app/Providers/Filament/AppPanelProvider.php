@@ -47,7 +47,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('app')
             ->tenant(Branch::class)
-            //->spa()
+            ->spa()
             ->domain(request()->server('HTTP_HOST'))
             ->login()
             ->passwordReset()

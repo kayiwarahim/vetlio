@@ -81,7 +81,7 @@ class ClientReservations extends ManageRelatedRecords
                 ->label('Canceled')
                 ->badgeColor('danger')
                 ->badge(function (Builder $query) {
-                    return $this->getRecord()->reservations()->canceled(false)->count();
+                    return $this->getRecord()->reservations()->canceled(true)->count();
                 })
                 ->icon(PhosphorIcons::CalendarX)
                 ->modifyQueryUsing(fn(Builder $query) => $query->canceled()),
