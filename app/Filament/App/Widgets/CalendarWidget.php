@@ -233,7 +233,7 @@ class CalendarWidget extends BaseCalendarWidget
         return null;
     }
 
-    public function getReservations(FetchInfo $info): Collection
+    public function getAppointments(FetchInfo $info): Collection
     {
         $appointments = Reservation::query()
             ->canceled(false)
@@ -258,7 +258,7 @@ class CalendarWidget extends BaseCalendarWidget
                     'color' => $appointment->service->color ?? '#8bc34a'
                 ])
                 ->resourceId($appointment->serviceProvider->id)
-                ->startEditable()
+                ->startEditable($appointment->status_id->isOrdered())
                 ->backgroundColor($appointment->service->color ?? '#8bc34a')
                 ->start($appointment->from)
                 ->end($appointment->to);
@@ -570,7 +570,7 @@ class CalendarWidget extends BaseCalendarWidget
     protected function getEvents(FetchInfo $info): Collection|array|Builder
     {
         $nonWorkingPeriods = $this->nonWorkingPeriods($info);
-        $reservations = $this->getReservations($info);
+        $reservations = $this->getAppointments($info);
         $holidayEvents = $this->getHolidays($info);
 
         return collect()
