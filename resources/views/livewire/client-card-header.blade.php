@@ -1,0 +1,3 @@
+<div>
+    {{$this->headerSchema}}
+</div>

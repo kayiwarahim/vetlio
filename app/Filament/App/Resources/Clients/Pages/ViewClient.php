@@ -5,6 +5,7 @@ namespace App\Filament\App\Resources\Clients\Pages;
 use App\Filament\App\Actions\SendEmailAction;
 use App\Filament\App\Resources\Clients\ClientResource;
 use App\Filament\App\Resources\Clients\Widgets\ClientStats;
+use App\Filament\App\Resources\Reservations\Actions\NewAppointmentAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
@@ -18,11 +19,6 @@ class ViewClient extends ViewRecord
 
     protected static ?string $navigationLabel = 'View client';
 
-    public function getSubheading(): string|Htmlable|null
-    {
-        return $this->getRecord()->full_name;
-    }
-
     protected function getHeaderWidgets(): array
     {
         return [
@@ -33,6 +29,7 @@ class ViewClient extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            NewAppointmentAction::make(),
             SendEmailAction::make(),
             EditAction::make(),
         ];

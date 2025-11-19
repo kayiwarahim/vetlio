@@ -12,6 +12,7 @@
         "php": "^8.2",
         "ext-openssl": "*",
         "ext-soap": "*",
+        "agencetwogether/hookshelper": "^0.0.3",
         "awcodes/filament-badgeable-column": "^3.0",
         "awcodes/filament-quick-create": "^4.0",
         "awcodes/palette": "^2.0",

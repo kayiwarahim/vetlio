@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Agencetwogether\HooksHelper\HooksHelperPlugin;
 use App\Filament\App\Clusters\Settings\SettingsCluster;
 use App\Filament\App\Pages\Dashboard;
 use App\Filament\App\Resources\Clients\ClientResource;
@@ -27,11 +28,13 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Swindon\FilamentHashids\Middleware\FilamentHashidsMiddleware;
 
@@ -78,6 +81,14 @@ class AppPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class, DoctorReservations::class, NotPayedInvoices::class
             ])
+            ->renderHook(
+                PanelsRenderHook::PAGE_SUB_NAVIGATION_SIDEBAR_BEFORE, function () {
+                if (request()->routeIs('filament.app.resources.clients.*')) {
+                    return Blade::render('@livewire(\'client-card-header\')');
+                }
+                return null;
+            },
+            )
             ->userMenuItems([
                 Action::make('settings')
                     ->label('Settings')
@@ -102,6 +113,7 @@ class AppPanelProvider extends PanelProvider
                 OrganisationApplySettings::class,
             ])
             ->plugins([
+                HooksHelperPlugin::make(),
                 AuthUIEnhancerPlugin::make()
                     ->emptyPanelBackgroundColor(Color::Blue, '50')
                     ->emptyPanelView('filament.app.auth.custom-login-view'),
