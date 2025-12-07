@@ -17,7 +17,7 @@ class AppointmentsTodayWidget extends TableWidget
         return Reservation::query()
             ->canceled(false)
             ->where('branch_id', Filament::getTenant()->id)
-            ->whereDate('from', today())
+            ->whereDate('start_time', today())
             ->with(['patient', 'client'])
             ->latest()
             ->take(5);

@@ -40,7 +40,7 @@ class PublicPanelProvider extends PanelProvider
             ->plugins([
                 EasyFooterPlugin::make()
                     ->withGithub(showLogo: true, showUrl: true)
-                    ->withLoadTime(),
+                    ->withLoadTime(app()->isLocal()),
             ])
             ->middleware([
                 EncryptCookies::class,

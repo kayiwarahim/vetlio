@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panelConfig = $panel
             ->id('admin')
             ->path('admin')
             ->colors([
@@ -35,11 +35,18 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->font('Mulish')
             ->maxContentWidth(Width::ScreenTwoExtraLarge)
-            ->spa()
             ->sidebarCollapsibleOnDesktop()
             ->login()
             ->databaseNotifications()
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->databaseNotificationsPolling('30s')
+            ->viteTheme('resources/css/filament/admin/theme.css');
+
+        // Enable SPA mode only in production
+        if (! app()->environment('local')) {
+            $panelConfig->spa();
+        }
+
+        return $panelConfig
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
             ->pages([
@@ -53,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 EasyFooterPlugin::make()
                     ->withGithub(showLogo: true, showUrl: true)
-                    ->withLoadTime(),
+                    ->withLoadTime(app()->isLocal()),
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->isLocal())
                     ->switchable(false)

@@ -22,7 +22,7 @@ class ReservationResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Clock;
 
-    protected static ?string $recordTitleAttribute = 'from';
+    protected static ?string $recordTitleAttribute = 'start_time';
 
     protected static ?string $navigationLabel = 'Waiting Room';
 

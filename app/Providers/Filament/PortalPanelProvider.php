@@ -29,7 +29,7 @@ class PortalPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panelConfig = $panel
             ->id('portal')
             ->path('portal')
             ->login()
@@ -38,10 +38,17 @@ class PortalPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
-            ->font('Mulish')
-            ->domain(request()->server('HTTP_HOST'))
+            ->font('Mulish');
+
+        // Only apply domain scoping in production (not local dev)
+        if (! app()->environment('local')) {
+            $panelConfig->domain(request()->server('HTTP_HOST'));
+        }
+
+        return $panelConfig
             ->topNavigation()
             ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->viteTheme('resources/css/filament/portal/theme.css')
             ->discoverResources(in: app_path('Filament/Portal/Resources'), for: 'App\Filament\Portal\Resources')
             ->discoverPages(in: app_path('Filament/Portal/Pages'), for: 'App\Filament\Portal\Pages')
@@ -59,7 +66,7 @@ class PortalPanelProvider extends PanelProvider
                     ->emptyPanelView('filament.portal.auth.custom-login-view'),
                 EasyFooterPlugin::make()
                     ->withGithub(showLogo: true, showUrl: true)
-                    ->withLoadTime(),
+                    ->withLoadTime(app()->isLocal()),
                 FilamentDeveloperLoginsPlugin::make()
                     ->modelClass(Client::class)
                     ->enabled(app()->isLocal())

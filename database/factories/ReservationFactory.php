@@ -46,8 +46,8 @@ class ReservationFactory extends Factory
             'reason_for_coming' => $this->faker->optional()->sentence(3),
 
             'date' => $start,
-            'from' => $start,
-            'to' => $end,
+            'start_time' => $start,
+            'end_time' => $end,
 
             'canceled_at' => null,
             'waiting_room_at' => null,
@@ -82,8 +82,8 @@ class ReservationFactory extends Factory
             return [
                 'status_id' => 3,
                 'date' => $start,
-                'from' => $start,
-                'to' => (clone $start)->addMinutes(30),
+                'start_time' => $start,
+                'end_time' => (clone $start)->addMinutes(30),
                 'in_process_at' => $start->copy()->addMinutes(5),
                 'completed_at' => $start->copy()->addMinutes(35),
             ];
@@ -113,8 +113,8 @@ class ReservationFactory extends Factory
         return $this->state(fn () => [
             'uuid' => Str::uuid()->toString(),
             'date' => $start,
-            'from' => $start,
-            'to' => $end,
+            'start_time' => $start,
+            'end_time' => $end,
             'status_id' => 2, // scheduled
             'note' => 'Routine check-up.',
             'reason_for_coming' => 'Vaccination booster',

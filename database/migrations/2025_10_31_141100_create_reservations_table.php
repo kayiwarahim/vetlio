@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->timestamp('date');
-            $table->timestamp('from');
-            $table->timestamp('to');
+            $table->timestamp('date')->nullable();
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('end_time')->nullable();
             $table->integer('client_id');
             $table->integer('patient_id');
             $table->smallInteger('status_id');
@@ -39,6 +39,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
     }
 
     /**

@@ -18,8 +18,8 @@ class StatsOverview extends StatsOverviewWidget
 
         return [
             Stat::make('Appointments today', Reservation::where('branch_id', $branchId)
-                ->whereDate('from', today())
-                ->canceled(false)
+                ->whereDate('start_time', today())
+                ->whereNull('canceled_at')
                 ->count())
                 ->color('success')
                 ->description('Appointments today')
@@ -39,9 +39,9 @@ class StatsOverview extends StatsOverviewWidget
                 ->description('Total revenue today')
                 ->icon(PhosphorIcons::Money),
 
-            Stat::make('Canceled', Reservation::where('organisation_id', $branchId)
-                ->canceled()
-                ->whereDate('from', today())
+            Stat::make('Canceled', Reservation::where('branch_id', $branchId)
+                ->whereNotNull('canceled_at')
+                ->whereDate('start_time', today())
                 ->count())
                 ->color('danger')
                 ->description('Canceled appointments today')

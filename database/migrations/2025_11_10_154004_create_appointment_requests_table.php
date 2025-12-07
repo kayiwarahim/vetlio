@@ -18,11 +18,11 @@ return new class extends Migration {
             $table->unsignedInteger('service_provider_id')->nullable();
             $table->unsignedInteger('patient_id');
             $table->date('date');
-            $table->timestamp('from');
-            $table->timestamp('to');
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('end_time')->nullable();
             $table->string('note')->nullable();
             $table->string('reason_for_coming')->nullable();
-            $table->unsignedTinyInteger('approval_status_id')->default(1); //Request
+            $table->unsignedTinyInteger('approval_status_id')->default(1);
             $table->timestamp('approval_at')->nullable();
             $table->string('approval_note')->nullable();
             $table->unsignedInteger('approval_by')->nullable();
@@ -30,6 +30,7 @@ return new class extends Migration {
             $table->softDeletes();
             $table->timestamps();
         });
+
     }
 
     /**

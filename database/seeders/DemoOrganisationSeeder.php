@@ -172,10 +172,11 @@ class DemoOrganisationSeeder extends Seeder
                     'service_id' => $services->random()->id,
                     'user_id' => $vet->id,
                     'service_provider_id' => $vet->id,
+                    'start_time' => now()->addHours(rand(0, 10)),
+                    'end_time' => now()->addHours(rand(11, 20)),
                 ];
             })
             ->create();
-
         //Create invoices
         $clients = Client::where('organisation_id', $organisation->id)->get();
         $services = Service::where('organisation_id', $organisation->id)->get();

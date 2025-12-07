@@ -20,13 +20,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[ObservedBy([ReservationObserver::class])]
 class Reservation extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReservationFactory> */
     use HasFactory, SoftDeletes, Organisationable, AddedByCurrentUser;
 
     protected $fillable = [
         'date',
-        'from',
-        'to',
+        'start_time',
+        'end_time',
         'client_id',
         'patient_id',
         'status_id',
@@ -38,7 +37,6 @@ class Reservation extends Model
         'room_id',
         'service_id',
         'canceled_at',
-        'canceled',
         'cancel_reason_id',
         'waiting_room_at',
         'in_process_at',
@@ -46,16 +44,20 @@ class Reservation extends Model
         'confirmed_status_id',
         'confirmed_at',
         'confirmed_note',
+        'organisation_id',
     ];
 
     protected $casts = [
         'status_id' => ReservationStatus::class,
-        'date' => 'date',
-        'from' => 'datetime',
-        'to' => 'datetime',
+        'date' => 'datetime',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
         'canceled_at' => 'datetime',
         'confirmed_at' => 'datetime',
         'waiting_room_at' => 'datetime',
+        'in_process_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'confirmed_status_id' => 'boolean',
     ];
 
     #[Scope]
@@ -86,9 +88,7 @@ class Reservation extends Model
 
     public function isCanceled(): Attribute
     {
-        return Attribute::make(function () {
-            return $this->canceled_at != null;
-        });
+        return Attribute::make(fn () => $this->canceled_at !== null);
     }
 
     public function cancelReason(): BelongsTo
@@ -135,78 +135,4 @@ class Reservation extends Model
     {
         return $this->hasMany(ReservationReminder::class, 'reservation_id');
     }
-
-    public function incrementStatus(): bool
-    {
-        $currentStatus = $this->status_id;
-
-        if ($currentStatus->isCompleted()) return false;
-
-        $this->update([
-            'status_id' => $currentStatus->value + 1
-        ]);
-
-        $this->updateReservationTimesOnIncrement();
-
-        return true;
-    }
-
-    private function updateReservationTimesOnIncrement(): void
-    {
-        if ($this->status_id->isWaitingRoom()) {
-            $this->update([
-                'waiting_room_at' => now(),
-            ]);
-        } else if ($this->status_id->isInProcess()) {
-            $this->update([
-                'in_process_at' => now(),
-            ]);
-        } else if ($this->status_id->isCompleted()) {
-            $this->update([
-                'completed_at' => now(),
-            ]);
-        }
-    }
-
-    public function decrementStatus(): bool
-    {
-        $currentStatus = $this->status_id;
-
-        if ($currentStatus->isOrdered()) return false;
-
-        $this->update([
-            'status_id' => $currentStatus->value - 1
-        ]);
-
-        $this->updateReservationTimesOnDecrement();
-
-        return true;
-    }
-
-    private function updateReservationTimesOnDecrement(): void
-    {
-        if ($this->status_id->isOrdered()) {
-            $this->update([
-                'completed_at' => null,
-                'waiting_room_at' => null,
-                'in_process_at' => null,
-            ]);
-        } else if ($this->status_id->isWaitingRoom()) {
-            $this->update([
-                'waiting_room_at' => now(),
-                'in_process_at' => null,
-                'completed_at' => null,
-            ]);
-        } else if ($this->status_id->isInProcess()) {
-            $this->update([
-                'in_process_at' => now(),
-                'completed_at' => null,
-            ]);
-        } else if ($this->status_id->isCompleted()) {
-            $this->update([
-                'completed_at' => now(),
-            ]);
-        }
-    }
-
 }

@@ -42,13 +42,19 @@ class AppPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panelConfig = $panel
             ->default()
             ->id('app')
             ->path('app')
-            ->tenant(Branch::class)
-            ->spa()
-            ->domain(request()->server('HTTP_HOST'))
+            ->tenant(Branch::class);
+
+        // Enable SPA mode only in production for better performance
+        if (! app()->environment('local')) {
+            $panelConfig->spa();
+            $panelConfig->domain(request()->server('HTTP_HOST'));
+        }
+
+        return $panelConfig
             ->login()
             ->passwordReset()
             ->colors([
@@ -69,15 +75,19 @@ class AppPanelProvider extends PanelProvider
             ->databaseTransactions()
             ->font('Mulish')
             ->databaseNotifications()
-            ->databaseNotificationsPolling('5s')
+            ->databaseNotificationsPolling('30s') // Reduced polling frequency for better performance
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
+            ->brandLogo(asset('img/logo.png'))
+            ->brandLogoHeight('2rem')
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->globalSearchDebounce('500ms') // Add debounce to reduce search queries
             ->viteTheme('resources/css/filament/app/theme.css')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\Filament\App\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\Filament\App\Pages')
             ->discoverClusters(in: app_path('Filament/App/Clusters'), for: 'App\Filament\App\Clusters')
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\Filament\App\Widgets')
+            ->unsavedChangesAlerts() // Enable form change tracking
             ->pages([
                 Dashboard::class, DoctorReservations::class, NotPayedInvoices::class
             ])
@@ -87,6 +97,11 @@ class AppPanelProvider extends PanelProvider
             }, scopes: ClientResource::class
             )
             ->userMenuItems([
+                Action::make('switchOrganisation')
+                    ->label('Switch Organisation')
+                    ->visible(fn(): bool => app()->environment('local'))
+                    ->url(fn(): string => route('select-tenant'))
+                    ->icon('heroicon-o-building-office-2'),
                 Action::make('settings')
                     ->label('Settings')
                     ->visible(function () {
@@ -114,16 +129,18 @@ class AppPanelProvider extends PanelProvider
                 AuthUIEnhancerPlugin::make()
                     ->emptyPanelBackgroundColor(Color::Blue, '50')
                     ->emptyPanelView('filament.app.auth.custom-login-view'),
+                // Disable footer load time calculation in production for performance
                 EasyFooterPlugin::make()
                     ->withGithub(showLogo: true, showUrl: true)
-                    ->withLoadTime(),
+                    ->withLoadTime(app()->isLocal()),
                 QuickCreatePlugin::make()
                     ->includes([
                         ClientResource::class,
                         PatientResource::class,
                         TaskResource::class,
                         ReservationResource::class,
-                    ]),
+                    ])
+                    ->keyBindings(['command+shift+a', 'ctrl+shift+a']),
                 FilamentDeveloperLoginsPlugin::make()
                     ->enabled(app()->isLocal())
                     ->switchable(false)
